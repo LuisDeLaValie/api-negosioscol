@@ -1,10 +1,10 @@
 package handlers
 
+import "github.com/gin-gonic/gin"
 
-import (	
-	"net/http"
-)
 
-func getLocal(w http.ResponseWriter, r *http.Request)  {
-	
+func getLocal(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "Hello, World! asdasd",
+	})
 }

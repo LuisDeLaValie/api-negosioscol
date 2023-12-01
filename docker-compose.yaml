@@ -7,6 +7,8 @@ services:
     build: .
     volumes:
         - .:/go/src/myapp
+    ports:
+      - 80:8080
 
     # ports:
     #   - 80:8000

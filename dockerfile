@@ -12,9 +12,7 @@ COPY go.mod .
 RUN go mod download
 
 COPY . .
-RUN go build main.go
+EXPOSE 8080
 
+ENTRYPOINT [ "go", "run", "main.go" ]
 
-FROM scratch
-COPY --from=build /go/src/myapp /go/bin/myapp
-ENTRYPOINT ["/go/bin/myapp"]
