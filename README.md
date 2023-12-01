@@ -22,13 +22,13 @@ Asegúrate de tener instalado y configurado Docker antes de comenzar.
 1. Clonar el repositorio en la máquina local:
    
    ```sh
-   git clone https://github.com/francerz/node-restful.git
+   git clone https://github.com/LuisDeLaValie/api_negosioscol.git
    ```
 
 2. Navegar al directorio del proyecto:
    
    ```sh
-   cd node-restful
+   cd api_negosioscol
    ```
 
 3. Ejecutar el siguiente comando para iniciar los contenedores:
@@ -43,7 +43,7 @@ Asegúrate de tener instalado y configurado Docker antes de comenzar.
     > si no lo está, se devolverá un mensaje de error indicando que no se
     > encontró el docker daemon.
 
-4. La API estará disponible en `http://localhost:3100`.
+4. La API estará disponible en `http://localhost:8080`.
 
 ## Documentación detallada
 
@@ -52,5 +52,5 @@ consulta la [documentación detallada](./docs/README.md).
 
 ## Enlaces externos
 
-- [Node.js](https://www.nodejs.org)
+- [Golang](https://go.dev/)
 - [Docker](https://www.docker.com)
