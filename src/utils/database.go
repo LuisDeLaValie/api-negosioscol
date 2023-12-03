@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/jinzhu/gorm"
+	"database/sql"
 
 	//Postgres Driver imported
 	_ "github.com/lib/pq"
 )
 
 // ConnectDB connect to Postgres DB
-func ConnectDB() *gorm.DB {
+func ConnectDB() *sql.DB {
 	var (
 		host     = "localhost"
 		user     = "postgres"
@@ -20,19 +20,15 @@ func ConnectDB() *gorm.DB {
 		name     = "postgres"
 	)
 	//Connect to DB
-	var DB *gorm.DB
-	DB, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, name))
+	var DB *sql.DB
+	DB, err := sql.Open("postgres", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, name))
 
 	if err != nil {
 		log.Fatalf("Error in connect the DB %v", err)
 		return nil
 	}
-	if err := DB.DB().Ping(); err != nil {
+	if err := DB.Ping(); err != nil {
 		log.Fatalln("Error in make ping the DB " + err.Error())
-		return nil
-	}
-	if DB.Error != nil {
-		log.Fatalln("Any Error in connect the DB " + err.Error())
 		return nil
 	}
 
