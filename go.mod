@@ -1,4 +1,4 @@
-module apiespe
+module negosioscol
 
 go 1.21.4
 
