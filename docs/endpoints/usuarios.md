@@ -248,6 +248,14 @@
   ```http
     POST /usuarios
   ```
+  ```json
+    {
+    "Nombre": "",
+    "Apellidos": "",
+    "Cumpleanos": "0001-01-01T00:00:00Z",
+    "Imagen": ""
+    }
+  ```
 
   ### Respuesta Exitosa (Código 201 Created)
   ```json

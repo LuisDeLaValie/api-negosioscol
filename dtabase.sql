@@ -10,6 +10,7 @@ SELECT EliminarUsuario(1);
 
 SELECT * FROM ObtenerUsuario(2);
 
+drop table Usuario;
 
 /*
  * CREAR BASE DE DATOS
@@ -74,33 +75,33 @@ $$;
 CREATE OR REPLACE FUNCTION EliminarUsuario(
     p_ID INT
 )
-RETURNS VOID
+RETURNS INT
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    filas_eliminadas INT;
 BEGIN
     DELETE FROM Usuario
     WHERE ID = p_ID;
+    GET DIAGNOSTICS filas_eliminadas = ROW_COUNT;
+   	return filas_eliminadas;
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION ObtenerUsuario(
-    p_ID INT
-)
+CREATE OR replace FUNCTION ObtenerUsuario(id_usuario INTEGER)
 RETURNS TABLE (
-    id INT,
+    ID INTEGER,
     Nombre VARCHAR(255),
     Apellidos VARCHAR(255),
     Creado TIMESTAMP,
     Actualizado TIMESTAMP,
     Cumpleanos TIMESTAMP,
     Imagen VARCHAR(255)
-)
-LANGUAGE plpgsql
-AS $$
+) AS $$
 BEGIN
-    RETURN QUERY SELECT * FROM Usuario WHERE ID = p_ID;
+    RETURN QUERY SELECT Usuario.ID, Usuario.Nombre, Usuario.Apellidos, Usuario.Creado, Usuario.Actualizado, Usuario.Cumpleanos, Usuario.Imagen
+                 FROM Usuario
+                 WHERE Usuario.ID = id_usuario;
 END;
-$$;
-
-SELECT Usuario.* FROM Usuario
+$$ LANGUAGE plpgsql;
 
