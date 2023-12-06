@@ -7,7 +7,7 @@ services:
     volumes:
         - .:/go/src/myapp
     ports:
-      - 8081:8080
+      - 8080:8080
 
   postgresql:
     image: postgres:16.1-bullseye
