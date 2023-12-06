@@ -1,4 +1,4 @@
-package utils
+package db
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 )
 
 // ConnectDB connect to Postgres DB
-func ConnectDB() *sql.DB {
+func ConnectDB() (*sql.DB, error) {
 	var (
 		host     = "localhost"
 		user     = "postgres"
@@ -24,17 +24,15 @@ func ConnectDB() *sql.DB {
 	DB, err := sql.Open("postgres", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, name))
 
 	if err != nil {
-		err = Error500(fmt.Sprintf("Error in connect the DB %v", err))
 		log.Fatalf(err.Error())
-		return nil
+		return nil, fmt.Errorf("Error in connect the DB %v", err)
 	}
 	if err := DB.Ping(); err != nil {
-		err = Error500(fmt.Sprintf("Error in make ping the DB " + err.Error()))
 		log.Fatalf(err.Error())
 
-		return nil
+		return nil, fmt.Errorf("Error in make ping the DB: %v ", err)
 	}
 
 	log.Println("DB connected")
-	return DB
+	return DB, nil
 }

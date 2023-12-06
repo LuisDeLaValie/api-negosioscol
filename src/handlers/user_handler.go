@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"negosioscol/src/models"
-	"negosioscol/src/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +13,7 @@ func GetUsuarioPorID(c *gin.Context) {
 	idd, err := strconv.Atoi(id)
 	if err != nil {
 
-		errcode := utils.Error400("El id no es valido.")
+		errcode := models.Error400("El id no es valido.")
 		c.JSON(errcode.Code, errcode)
 		return
 	}
@@ -34,7 +33,7 @@ func CrearUsuario(c *gin.Context) {
 
 	var usuario map[string]interface{}
 	if err := c.ShouldBindJSON(&usuario); err != nil {
-		errcode := utils.Error500("Ocurrió un problema para procesar la solicitud" + err.Error())
+		errcode := models.Error500("Ocurrió un problema para procesar la solicitud" + err.Error())
 		c.JSON(errcode.Code, errcode)
 
 		return
@@ -47,7 +46,7 @@ func CrearUsuario(c *gin.Context) {
 	imagen := usuario["Imagen"].(string)
 
 	if nombre == "" || apellidos == "" || cumpleanos == "" || imagen == "" {
-		errcode := utils.Error400("Faltan datos.")
+		errcode := models.Error400("Faltan datos.")
 		c.JSON(errcode.Code, errcode)
 
 		return
@@ -68,7 +67,7 @@ func ActualizarUsuario(c *gin.Context) {
 	id := c.Param("id")
 	idd, err := strconv.Atoi(id)
 	if err != nil {
-		errcode := utils.Error400("El id no es valido.")
+		errcode := models.Error400("El id no es valido.")
 		c.JSON(errcode.Code, errcode)
 		return
 	}
@@ -90,7 +89,7 @@ func ActualizarUsuario(c *gin.Context) {
 	imagen := usuario["Imagen"].(string)
 
 	if nombre == "" || apellidos == "" || cumpleanos == "" || imagen == "" {
-		errcode := utils.Error400("Faltan datos.")
+		errcode := models.Error400("Faltan datos.")
 		c.JSON(errcode.Code, errcode)
 
 		return
@@ -164,19 +163,19 @@ func RemplanzarUsuario(c *gin.Context) {
 		return
 	}
 
-	idC, resE := models.CrearUsuario(nombre, apellidos, cumpleanos, imagen)
+	_, resE := models.CrearUsuario(nombre, apellidos, cumpleanos, imagen)
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 
 		return
 	}
 
-	user, resE := models.ObtenerUsuario(*idC)
-	if resE != nil {
-		c.JSON(resE.Code, resE)
+	// user, resE := models.ObtenerUsuario(*idC)
+	// if resE != nil {
+	// 	c.JSON(resE.Code, resE)
 
-		return
-	}
+	// 	return
+	// }
 
-	c.JSON(200, user)
+	c.JSON(201, gin.H{})
 }

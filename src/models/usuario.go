@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	"negosioscol/src/utils"
+	"negosioscol/src/db"
 	"time"
 )
 
@@ -16,83 +16,95 @@ type Usuario struct {
 	Imagen      string    `json:"Imagen"`
 }
 
-func CrearUsuario(nombres string, apellidos string, cumple string, imagen string) (*int64, *utils.ErrorStatusCode) {
+func CrearUsuario(nombres string, apellidos string, cumple string, imagen string) (*int64, *ErrorStatusCode) {
 
-	db := utils.ConnectDB()
+	db, err := db.ConnectDB()
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
 	defer db.Close()
 
 	stmt, err := db.Prepare("CALL RegistrarUsuario($1, $2, $3, $4)")
 	if err != nil {
-		return nil, utils.Error500(err.Error())
+		return nil, Error500(err.Error())
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(nombres, apellidos, cumple, imagen)
 	if err != nil {
-		return nil, utils.Error500(err.Error())
+		return nil, Error500(err.Error())
 	}
 
 	return nil, nil
 
 }
-func EditarUsuario(id int, nombres string, apellidos string, cumple string, imagen string) *utils.ErrorStatusCode {
+func EditarUsuario(id int, nombres string, apellidos string, cumple string, imagen string) *ErrorStatusCode {
 
-	db := utils.ConnectDB()
+	db, err := db.ConnectDB()
+	if err != nil {
+		return Error500(err.Error())
+	}
 	defer db.Close()
 
 	stmt, err := db.Prepare("CALL ActualizarUsuario($1, $2, $3, $4, $5)")
 	if err != nil {
-		return utils.Error500(err.Error())
+		return Error500(err.Error())
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(id, nombres, apellidos, cumple, imagen)
 	if err != nil {
-		return utils.Error500(err.Error())
+		return Error500(err.Error())
 	}
 
 	return nil
 
 }
-func EliminarUsuario(id int) *utils.ErrorStatusCode {
+func EliminarUsuario(id int) *ErrorStatusCode {
 
-	db := utils.ConnectDB()
+	db, err := db.ConnectDB()
+	if err != nil {
+		return Error500(err.Error())
+	}
 	defer db.Close()
 
 	stmt, err := db.Prepare("SELECT EliminarUsuario($1);")
 	if err != nil {
-		return utils.Error500(err.Error())
+		return Error500(err.Error())
 	}
 	defer stmt.Close()
 
 	result, err := stmt.Exec(id)
 	if err != nil {
-		return utils.Error500(err.Error())
+		return Error500(err.Error())
 	}
 
 	delet, err := result.RowsAffected()
 	if err != nil {
-		return utils.Error500(err.Error())
+		return Error500(err.Error())
 	} else if delet == 0 {
-		return utils.Error500("no se elimino el usuario")
+		return Error500("no se elimino el usuario")
 	}
 	return nil
 
 }
-func ObtenerUsuario(id int64) (*Usuario, *utils.ErrorStatusCode) {
+func ObtenerUsuario(id int64) (*Usuario, *ErrorStatusCode) {
 
-	db := utils.ConnectDB()
+	db, err := db.ConnectDB()
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
 	defer db.Close()
 
 	stmt, err := db.Prepare("SELECT * FROM ObtenerUsuario($1);")
 	if err != nil {
-		return nil, utils.Error500(err.Error())
+		return nil, Error500(err.Error())
 	}
 	defer stmt.Close()
 
 	resul, err := stmt.Query(id)
 	if err != nil {
-		return nil, utils.Error500(err.Error())
+		return nil, Error500(err.Error())
 	}
 
 	var usuario Usuario
@@ -107,10 +119,10 @@ func ObtenerUsuario(id int64) (*Usuario, *utils.ErrorStatusCode) {
 			&usuario.Imagen,
 		)
 		if err != nil {
-			return nil, utils.Error500(err.Error())
+			return nil, Error500(err.Error())
 		}
 	} else {
-		return nil, utils.Error400(fmt.Sprintf("No se encontro el usuario %d", id))
+		return nil, Error400(fmt.Sprintf("No se encontro el usuario %d", id))
 	}
 
 	return &usuario, nil

@@ -23,6 +23,7 @@ func main() {
 
 	// Ruta para actualizar un usuario existente (PUT)
 	router.PUT("/usuarios/:id", handlers.ActualizarUsuario)
+	router.PATCH("/usuarios/:id", handlers.RemplanzarUsuario)
 
 	// Ruta para eliminar un usuario (DELETE)
 	router.DELETE("/usuarios/:id", handlers.EliminarUsuario)
