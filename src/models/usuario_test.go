@@ -6,21 +6,21 @@ import (
 )
 
 func TestCrearUsuario(t *testing.T) {
-	err := models.CrearUsuario("EMilio 1", "ZAnches", "2023-12-02 22:32:17", "https://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpg")
+	_, err := models.CrearUsuario("EMilio 1", "ZAnches", "2023-12-02 22:32:17", "https://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpg")
 	if err != nil {
 		t.Error(err)
 	}
 
-	err = models.CrearUsuario("EMilio 2", "ZAnches", "2023-12-02", "https://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpg")
+	_, err = models.CrearUsuario("EMilio 2", "ZAnches", "2023-12-02", "https://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpg")
 	if err != nil {
 		t.Error(err)
 	}
 
-	err = models.CrearUsuario("EMilio 3", "ZAnches", "02/12/2023", "https://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpg")
+	_, err = models.CrearUsuario("EMilio 3", "ZAnches", "02/12/2023", "https://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpg")
 	if err != nil {
 		t.Error(err)
 	}
-	err = models.CrearUsuario("EMilio 4", "ZAnches", "02/12/2023", "https://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpghttps://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpghttps://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpg")
+	_, err = models.CrearUsuario("EMilio 4", "ZAnches", "02/12/2023", "https://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpghttps://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpghttps://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpg")
 	if err != nil {
 		t.Log(err)
 	} else {

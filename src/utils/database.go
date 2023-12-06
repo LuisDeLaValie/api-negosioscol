@@ -24,11 +24,14 @@ func ConnectDB() *sql.DB {
 	DB, err := sql.Open("postgres", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, name))
 
 	if err != nil {
-		log.Fatalf("Error in connect the DB %v", err)
+		err = Error500(fmt.Sprintf("Error in connect the DB %v", err))
+		log.Fatalf(err.Error())
 		return nil
 	}
 	if err := DB.Ping(); err != nil {
-		log.Fatalln("Error in make ping the DB " + err.Error())
+		err = Error500(fmt.Sprintf("Error in make ping the DB " + err.Error()))
+		log.Fatalf(err.Error())
+
 		return nil
 	}
 
