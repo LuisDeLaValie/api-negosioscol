@@ -122,7 +122,7 @@ func ObtenerUsuario(id int64) (*Usuario, *ErrorStatusCode) {
 			return nil, Error500(err.Error())
 		}
 	} else {
-		return nil, Error400(fmt.Sprintf("No se encontro el usuario %d", id))
+		return nil, Error404(fmt.Sprintf("No se encontro el usuario %d", id))
 	}
 
 	return &usuario, nil
