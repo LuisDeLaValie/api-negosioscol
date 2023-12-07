@@ -31,6 +31,14 @@ func GetUsuarioPorID(c *gin.Context) {
 // Crear un nuevo usuario
 func CrearUsuario(c *gin.Context) {
 
+	defer func() {
+		err := recover()
+		if err != nil {
+			errcode := models.Error500("Ocurrió un problema para procesar la solicitud:\n %v", err)
+			c.JSON(errcode.Code, errcode)
+		}
+	}()
+
 	var usuario map[string]interface{}
 	if err := c.ShouldBindJSON(&usuario); err != nil {
 		errcode := models.Error500("Ocurrió un problema para procesar la solicitud" + err.Error())
@@ -64,6 +72,14 @@ func CrearUsuario(c *gin.Context) {
 
 // Actualizar un usuario existente por su ID
 func ActualizarUsuario(c *gin.Context) {
+	defer func() {
+		err := recover()
+		if err != nil {
+			errcode := models.Error500("Ocurrió un problema para procesar la solicitud:\n %v", err)
+			c.JSON(errcode.Code, errcode)
+		}
+	}()
+
 	id := c.Param("id")
 	idd, err := strconv.Atoi(id)
 	if err != nil {
@@ -121,6 +137,14 @@ func EliminarUsuario(c *gin.Context) {
 }
 
 func RemplanzarUsuario(c *gin.Context) {
+	defer func() {
+		err := recover()
+		if err != nil {
+			errcode := models.Error500("Ocurrió un problema para procesar la solicitud:\n %v", err)
+			c.JSON(errcode.Code, errcode)
+		}
+	}()
+
 	id := c.Param("id")
 	idd, err := strconv.Atoi(id)
 	if err != nil {
