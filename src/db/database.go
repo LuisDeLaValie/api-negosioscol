@@ -13,9 +13,9 @@ import (
 // ConnectDB connect to Postgres DB
 func ConnectDB() (*sql.DB, error) {
 	var (
-		host     = "localhost"
-		user     = "postgres"
+		host     = "postgresql"
 		port     = 5432
+		user     = "postgres"
 		password = "postgres"
 		name     = "postgres"
 	)

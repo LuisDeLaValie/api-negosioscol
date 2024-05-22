@@ -1,22 +1,11 @@
-/**
- * PUREBAS
- */
-
-CALL RegistrarUsuario('Juan', 'Pérez', '1990-01-01', 'https://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpg');
-
-CALL ActualizarUsuario(1, 'NuevoNombre', 'NuevosApellidos', '1990-01-01', 'https://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpg');
-
-SELECT EliminarUsuario(1);
-
-SELECT * FROM ObtenerUsuario(2);
-
-drop table Usuario;
 
 /*
  * CREAR BASE DE DATOS
  */
 
 CREATE DATABASE NegociosCol;
+
+\c NegociosCol
 
 CREATE TABLE Usuario (
     ID SERIAL PRIMARY KEY,
@@ -105,3 +94,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+
+/**
+ * PUREBAS
+ */
+
+CALL RegistrarUsuario('Juan', 'Pérez', '1990-01-01', 'https://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpg');
+
+CALL ActualizarUsuario(1, 'NuevoNombre', 'NuevosApellidos', '1990-01-01', 'https://bestprofilepictures.com/wp-content/uploads/2021/08/Amazing-Profile-Picture.jpg');
+
+SELECT EliminarUsuario(1);
