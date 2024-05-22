@@ -18,6 +18,17 @@ CREATE TABLE Usuario (
 );
 
 
+CREATE TABLE Servisio (
+    IDProducto SERIAL PRIMARY KEY,
+    Nombre VARCHAR(255) NOT NULL,
+    Descripcion TEXT,
+    Unidad BIGINT,
+    Creado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Actualizado TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
 /*
  * Procedure
  */
@@ -33,6 +44,20 @@ AS $$
 BEGIN
     INSERT INTO Usuario (Nombre, Apellidos, Creado, Actualizado, Cumpleanos, Imagen)
     VALUES (p_Nombre, p_Apellidos, NOW(), NOW(), p_Cumpleanos, p_Imagen);
+END;
+$$;
+
+
+CREATE OR REPLACE PROCEDURE InsertarServisio(    
+    IN p_Nombre VARCHAR(255),
+    IN p_Descripcion TEXT,
+    IN p_Unidad BIGINT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO Servisio ( Nombre, Descripcion, Unidad)
+    VALUES ( p_Nombre, p_Descripcion, p_Unidad);
 END;
 $$;
 
@@ -57,6 +82,26 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE PROCEDURE ActualizarServisio(
+    IN p_IDProducto int,
+    IN p_Nombre VARCHAR(255),
+    IN p_Descripcion TEXT,
+    IN p_Unidad BIGINT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE Servisio
+    SET Nombre = p_Nombre,
+        Descripcion = p_Descripcion,
+        Unidad = p_Unidad,
+        Actualizado = NOW()
+    WHERE IDProducto = p_IDProducto;
+END;
+$$;
+
+
+
 /**
  * Funciones
  */
@@ -77,6 +122,23 @@ BEGIN
 END;
 $$;
 
+
+CREATE OR REPLACE FUNCTION EliminarServisio(p_IDProducto int)
+RETURNS INT
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    filas_eliminadas INT;
+BEGIN
+    DELETE FROM Servisio 
+    WHERE IDProducto = p_IDProducto;
+    GET DIAGNOSTICS filas_eliminadas = ROW_COUNT;
+   	return filas_eliminadas;
+END;
+$$ ;
+
+
+
 CREATE OR replace FUNCTION ObtenerUsuario(id_usuario INTEGER)
 RETURNS TABLE (
     ID INTEGER,
@@ -93,6 +155,40 @@ BEGIN
                  WHERE Usuario.ID = id_usuario;
 END;
 $$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION ObtenerServisio(p_IDProducto INTEGER)
+RETURNS TABLE (
+    IDProducto INTEGER,
+    Nombre VARCHAR,
+    Descripcion TEXT,
+    Unidad BIGINT,
+    Creado TIMESTAMP,
+    Actualizado TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY SELECT Servisio.IDProducto, Servisio.Nombre, Servisio.Descripcion, Servisio.Unidad, Servisio.Creado, Servisio.Actualizado
+     FROM Servisio WHERE Servisio.IDProducto = p_IDProducto;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION ListarServisio()
+RETURNS TABLE (
+    IDProducto INTEGER,
+    Nombre VARCHAR,
+    Descripcion TEXT,
+    Unidad BIGINT,
+    Creado TIMESTAMP,
+    Actualizado TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY SELECT * FROM Servisio;
+END;
+$$ LANGUAGE plpgsql;
+
+
 
 
 

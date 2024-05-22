@@ -28,6 +28,24 @@ func main() {
 	// Ruta para eliminar un usuario (DELETE)
 	router.DELETE("/usuarios/:id", handlers.EliminarUsuario)
 
+	/**
+	** Sevicios
+	**
+	 */
+	// Ruta para obtener un usuario por su ID (GET)
+	router.GET("/servicios", handlers.GetServicios)
+	router.GET("/servicios/:id", handlers.GetServicioPorID)
+
+	// Ruta para crear un nuevo usuario (POST)
+	router.POST("/servicios", handlers.CrearServicio)
+
+	// Ruta para actualizar un usuario existente (PUT)
+	router.PUT("/servicios/:id", handlers.ActualizarServicio)
+	router.PATCH("/servicios/:id", handlers.RemplanzarServicio)
+
+	// Ruta para eliminar un usuario (DELETE)
+	router.DELETE("/servicios/:id", handlers.EliminarServicio)
+
 	// Run the application
 	router.Run(":8080")
 }

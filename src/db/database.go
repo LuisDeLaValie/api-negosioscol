@@ -17,7 +17,7 @@ func ConnectDB() (*sql.DB, error) {
 		port     = 5432
 		user     = "postgres"
 		password = "postgres"
-		name     = "postgres"
+		name     = "NegociosCol"
 	)
 	//Connect to DB
 	var DB *sql.DB
