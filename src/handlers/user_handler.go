@@ -50,17 +50,18 @@ func CrearUsuario(c *gin.Context) {
 	// Aquí puedes usar los datos del usuario
 	nombre := usuario["Nombre"].(string)
 	apellidos := usuario["Apellidos"].(string)
+	correo := usuario["Correo"].(string)
 	cumpleanos := usuario["Cumpleanos"].(string)
 	imagen := usuario["Imagen"].(string)
 
-	if nombre == "" || apellidos == "" || cumpleanos == "" || imagen == "" {
+	if nombre == "" || apellidos == "" || correo == "" || cumpleanos == "" || imagen == "" {
 		errcode := models.Error400("Faltan datos.")
 		c.JSON(errcode.Code, errcode)
 
 		return
 	}
 
-	_, err := models.CrearUsuario(nombre, apellidos, cumpleanos, imagen)
+	_, err := models.CrearUsuario(nombre, apellidos, correo, cumpleanos, imagen)
 	if err != nil {
 		c.JSON(err.Code, err)
 
@@ -101,17 +102,18 @@ func ActualizarUsuario(c *gin.Context) {
 	// Aquí puedes usar los datos del usuario
 	nombre := usuario["Nombre"].(string)
 	apellidos := usuario["Apellidos"].(string)
+	correo := usuario["Correo"].(string)
 	cumpleanos := usuario["Cumpleanos"].(string)
 	imagen := usuario["Imagen"].(string)
 
-	if nombre == "" || apellidos == "" || cumpleanos == "" || imagen == "" {
+	if nombre == "" || apellidos == "" || correo == "" || cumpleanos == "" || imagen == "" {
 		errcode := models.Error400("Faltan datos.")
 		c.JSON(errcode.Code, errcode)
 
 		return
 	}
 
-	resE := models.EditarUsuario(idd, nombre, apellidos, cumpleanos, imagen)
+	resE := models.EditarUsuario(idd, nombre, apellidos, correo, cumpleanos, imagen)
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 
@@ -169,10 +171,11 @@ func RemplanzarUsuario(c *gin.Context) {
 	// Aquí puedes usar los datos del usuario
 	nombre := usuario["Nombre"].(string)
 	apellidos := usuario["Apellidos"].(string)
+	corro := usuario["Correo"].(string)
 	cumpleanos := usuario["Cumpleanos"].(string)
 	imagen := usuario["Imagen"].(string)
 
-	if nombre == "" || apellidos == "" || cumpleanos == "" || imagen == "" {
+	if nombre == "" || apellidos == "" || corro == "" || cumpleanos == "" || imagen == "" {
 		c.JSON(400, gin.H{
 			"errno":             400,
 			"error":             "bad_request",
@@ -187,7 +190,7 @@ func RemplanzarUsuario(c *gin.Context) {
 		return
 	}
 
-	_, resE := models.CrearUsuario(nombre, apellidos, cumpleanos, imagen)
+	_, resE := models.CrearUsuario(nombre, apellidos, corro, cumpleanos, imagen)
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 

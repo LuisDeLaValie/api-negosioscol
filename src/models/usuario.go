@@ -10,13 +10,14 @@ type Usuario struct {
 	IDUsuario   int64     `json:"Id_Usuario"`
 	Nombre      string    `json:"Nombre"`
 	Apellidos   string    `json:"Apellidos"`
+	Correo      string    `json:"Correo"`
 	Creado      string    `json:"Creado"`
 	Actualizado time.Time `json:"Actualizado"`
 	Cumpleanos  time.Time `json:"Cumpleanos"`
 	Imagen      string    `json:"Imagen"`
 }
 
-func CrearUsuario(nombres string, apellidos string, cumple string, imagen string) (*int64, *ErrorStatusCode) {
+func CrearUsuario(nombres string, apellidos string, correo string, cumple string, imagen string) (*int64, *ErrorStatusCode) {
 
 	db, err := db.ConnectDB()
 	if err != nil {
@@ -24,13 +25,13 @@ func CrearUsuario(nombres string, apellidos string, cumple string, imagen string
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("CALL RegistrarUsuario($1, $2, $3, $4)")
+	stmt, err := db.Prepare("CALL RegistrarUsuario($1, $2, $3, $4, $5)")
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(nombres, apellidos, cumple, imagen)
+	_, err = stmt.Exec(nombres, apellidos, correo, cumple, imagen)
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
@@ -38,7 +39,7 @@ func CrearUsuario(nombres string, apellidos string, cumple string, imagen string
 	return nil, nil
 
 }
-func EditarUsuario(id int, nombres string, apellidos string, cumple string, imagen string) *ErrorStatusCode {
+func EditarUsuario(id int, nombres string, apellidos string, correo string, cumple string, imagen string) *ErrorStatusCode {
 
 	db, err := db.ConnectDB()
 	if err != nil {
@@ -46,13 +47,13 @@ func EditarUsuario(id int, nombres string, apellidos string, cumple string, imag
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("CALL ActualizarUsuario($1, $2, $3, $4, $5)")
+	stmt, err := db.Prepare("CALL ActualizarUsuario($1, $2, $3, $4, $5, $6)")
 	if err != nil {
 		return Error500(err.Error())
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(id, nombres, apellidos, cumple, imagen)
+	_, err = stmt.Exec(id, nombres, apellidos, correo, cumple, imagen)
 	if err != nil {
 		return Error500(err.Error())
 	}
@@ -113,6 +114,7 @@ func ObtenerUsuario(id int64) (*Usuario, *ErrorStatusCode) {
 			&usuario.IDUsuario,
 			&usuario.Nombre,
 			&usuario.Apellidos,
+			&usuario.Correo,
 			&usuario.Creado,
 			&usuario.Actualizado,
 			&usuario.Cumpleanos,
