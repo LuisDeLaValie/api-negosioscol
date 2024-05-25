@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"negosioscol/src/db"
 	"time"
 )
@@ -11,13 +12,14 @@ type Usuario struct {
 	Nombre      string    `json:"Nombre"`
 	Apellidos   string    `json:"Apellidos"`
 	Correo      string    `json:"Correo"`
+	Password    string    `json:"Password"`
 	Creado      string    `json:"Creado"`
 	Actualizado time.Time `json:"Actualizado"`
 	Cumpleanos  time.Time `json:"Cumpleanos"`
 	Imagen      string    `json:"Imagen"`
 }
 
-func CrearUsuario(nombres string, apellidos string, correo string, cumple string, imagen string) (*int64, *ErrorStatusCode) {
+func CrearUsuario(nombres string, apellidos string, correo string, password string, cumple string, imagen string) (*int64, *ErrorStatusCode) {
 
 	db, err := db.ConnectDB()
 	if err != nil {
@@ -25,21 +27,28 @@ func CrearUsuario(nombres string, apellidos string, correo string, cumple string
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("CALL RegistrarUsuario($1, $2, $3, $4, $5)")
+	stmt, err := db.Prepare("CALL registrarusuario($1, $2, $3, $4, $5, $6);")
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(nombres, apellidos, correo, cumple, imagen)
+	_, err = stmt.Exec(nombres, apellidos, correo, password, cumple, imagen)
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
 
-	return nil, nil
+	// Obtener el último ID insertado
+	var lastID int64
+	err = db.QueryRow("SELECT lastval()").Scan(&lastID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &lastID, nil
 
 }
-func EditarUsuario(id int, nombres string, apellidos string, correo string, cumple string, imagen string) *ErrorStatusCode {
+func EditarUsuario(id int, nombres string, apellidos string, correo string, password string, cumple string, imagen string) *ErrorStatusCode {
 
 	db, err := db.ConnectDB()
 	if err != nil {
@@ -47,13 +56,13 @@ func EditarUsuario(id int, nombres string, apellidos string, correo string, cump
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("CALL ActualizarUsuario($1, $2, $3, $4, $5, $6)")
+	stmt, err := db.Prepare("CALL actualizarusuario($1, $2, $3, $4, $5, $6, $7);")
 	if err != nil {
 		return Error500(err.Error())
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(id, nombres, apellidos, correo, cumple, imagen)
+	_, err = stmt.Exec(id, nombres, apellidos, correo, password, cumple, imagen)
 	if err != nil {
 		return Error500(err.Error())
 	}
@@ -69,7 +78,7 @@ func EliminarUsuario(id int) *ErrorStatusCode {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("SELECT EliminarUsuario($1);")
+	stmt, err := db.Prepare("SELECT eliminarusuario($1);")
 	if err != nil {
 		return Error500(err.Error())
 	}
@@ -97,7 +106,7 @@ func ObtenerUsuario(id int64) (*Usuario, *ErrorStatusCode) {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("SELECT * FROM ObtenerUsuario($1);")
+	stmt, err := db.Prepare("select * FROM obtenerusuario($1);")
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
@@ -115,6 +124,7 @@ func ObtenerUsuario(id int64) (*Usuario, *ErrorStatusCode) {
 			&usuario.Nombre,
 			&usuario.Apellidos,
 			&usuario.Correo,
+			&usuario.Password,
 			&usuario.Creado,
 			&usuario.Actualizado,
 			&usuario.Cumpleanos,

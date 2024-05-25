@@ -8,7 +8,7 @@ import (
 )
 
 // Obtener un servisio por su ID
-func GetServisioPorID(c *gin.Context) {
+func GetProductoPorID(c *gin.Context) {
 	id := c.Param("id")
 	idd, err := strconv.Atoi(id)
 	if err != nil {
@@ -17,7 +17,7 @@ func GetServisioPorID(c *gin.Context) {
 		return
 	}
 
-	servi, resE := models.ObtenerServisio(int64(idd))
+	servi, resE := models.ObtenerProducto(int64(idd))
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 		return
@@ -27,7 +27,7 @@ func GetServisioPorID(c *gin.Context) {
 }
 
 // Crear un nuevo servisio
-func CrearServisio(c *gin.Context) {
+func CrearProducto(c *gin.Context) {
 
 	defer func() {
 		err := recover()
@@ -58,14 +58,14 @@ func CrearServisio(c *gin.Context) {
 		return
 	}
 
-	lastID, err := models.CrearServisio(nombre, descripcion, imagen, int64(unidad))
+	lastID, err := models.CrearProducto(nombre, descripcion, imagen, int64(unidad))
 	if err != nil {
 		c.JSON(err.Code, err)
 
 		return
 	}
 
-	servi, resE := models.ObtenerServisio(*lastID)
+	servi, resE := models.ObtenerProducto(*lastID)
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 		return
@@ -75,7 +75,7 @@ func CrearServisio(c *gin.Context) {
 }
 
 // Actualizar un servisio existente por su ID
-func ActualizarServisio(c *gin.Context) {
+func ActualizarProducto(c *gin.Context) {
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -111,14 +111,14 @@ func ActualizarServisio(c *gin.Context) {
 		return
 	}
 
-	resE := models.EditarServisio(idd, nombre, descripcion, imagen, int64(int64(unidad)))
+	resE := models.EditarProducto(idd, nombre, descripcion, imagen, int64(int64(unidad)))
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 
 		return
 	}
 
-	servi, resE := models.ObtenerServisio(int64(idd))
+	servi, resE := models.ObtenerProducto(int64(idd))
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 		return
@@ -128,7 +128,7 @@ func ActualizarServisio(c *gin.Context) {
 }
 
 // Eliminar un servisio por su ID
-func EliminarServisio(c *gin.Context) {
+func EliminarProducto(c *gin.Context) {
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -145,7 +145,7 @@ func EliminarServisio(c *gin.Context) {
 		return
 	}
 
-	resE := models.EliminarServisio(idd)
+	resE := models.EliminarProducto(idd)
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 
@@ -153,12 +153,12 @@ func EliminarServisio(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"message": "EliminarServisio:" + id,
+		"message": "EliminarProducto:" + id,
 	})
 
 }
 
-func RemplanzarServisio(c *gin.Context) {
+func RemplanzarProducto(c *gin.Context) {
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -193,20 +193,20 @@ func RemplanzarServisio(c *gin.Context) {
 		return
 	}
 
-	if resE := models.EliminarServisio(idd); resE != nil {
+	if resE := models.EliminarProducto(idd); resE != nil {
 		c.JSON(resE.Code, resE)
 
 		return
 	}
 
-	lastID, resE := models.CrearServisio(nombre, descripcion, imagen, int64(int64(unidad)))
+	lastID, resE := models.CrearProducto(nombre, descripcion, imagen, int64(int64(unidad)))
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 
 		return
 	}
 
-	servi, resE := models.ObtenerServisio(*lastID)
+	servi, resE := models.ObtenerProducto(*lastID)
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 		return

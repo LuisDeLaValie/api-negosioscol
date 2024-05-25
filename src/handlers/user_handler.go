@@ -12,7 +12,6 @@ func GetUsuarioPorID(c *gin.Context) {
 	id := c.Param("id")
 	idd, err := strconv.Atoi(id)
 	if err != nil {
-
 		errcode := models.Error400("El id no es valido.")
 		c.JSON(errcode.Code, errcode)
 		return
@@ -21,7 +20,6 @@ func GetUsuarioPorID(c *gin.Context) {
 	user, resE := models.ObtenerUsuario(int64(idd))
 	if resE != nil {
 		c.JSON(resE.Code, resE)
-
 		return
 	}
 
@@ -51,24 +49,31 @@ func CrearUsuario(c *gin.Context) {
 	nombre := usuario["Nombre"].(string)
 	apellidos := usuario["Apellidos"].(string)
 	correo := usuario["Correo"].(string)
+	password := usuario["Password"].(string)
 	cumpleanos := usuario["Cumpleanos"].(string)
 	imagen := usuario["Imagen"].(string)
 
-	if nombre == "" || apellidos == "" || correo == "" || cumpleanos == "" || imagen == "" {
+	if nombre == "" || apellidos == "" || correo == "" || password == "" || cumpleanos == "" || imagen == "" {
 		errcode := models.Error400("Faltan datos.")
 		c.JSON(errcode.Code, errcode)
 
 		return
 	}
 
-	_, err := models.CrearUsuario(nombre, apellidos, correo, cumpleanos, imagen)
+	lastID, err := models.CrearUsuario(nombre, apellidos, correo, password, cumpleanos, imagen)
 	if err != nil {
 		c.JSON(err.Code, err)
 
 		return
 	}
 
-	c.JSON(201, gin.H{})
+	user, resE := models.ObtenerUsuario(*lastID)
+	if resE != nil {
+		c.JSON(resE.Code, resE)
+		return
+	}
+
+	c.JSON(200, user)
 }
 
 // Actualizar un usuario existente por su ID
@@ -103,17 +108,18 @@ func ActualizarUsuario(c *gin.Context) {
 	nombre := usuario["Nombre"].(string)
 	apellidos := usuario["Apellidos"].(string)
 	correo := usuario["Correo"].(string)
+	password := usuario["Password"].(string)
 	cumpleanos := usuario["Cumpleanos"].(string)
 	imagen := usuario["Imagen"].(string)
 
-	if nombre == "" || apellidos == "" || correo == "" || cumpleanos == "" || imagen == "" {
+	if nombre == "" || apellidos == "" || correo == "" || password == "" || cumpleanos == "" || imagen == "" {
 		errcode := models.Error400("Faltan datos.")
 		c.JSON(errcode.Code, errcode)
 
 		return
 	}
 
-	resE := models.EditarUsuario(idd, nombre, apellidos, correo, cumpleanos, imagen)
+	resE := models.EditarUsuario(idd, nombre, apellidos, correo, password, cumpleanos, imagen)
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 
@@ -123,7 +129,6 @@ func ActualizarUsuario(c *gin.Context) {
 	user, resE := models.ObtenerUsuario(int64(idd))
 	if resE != nil {
 		c.JSON(resE.Code, resE)
-
 		return
 	}
 
@@ -132,10 +137,33 @@ func ActualizarUsuario(c *gin.Context) {
 
 // Eliminar un usuario por su ID
 func EliminarUsuario(c *gin.Context) {
+	defer func() {
+		err := recover()
+		if err != nil {
+			errcode := models.Error500("Ocurrió un problema para procesar la solicitud:\n %v", err)
+			c.JSON(errcode.Code, errcode)
+		}
+	}()
+
 	id := c.Param("id")
+	idd, err := strconv.Atoi(id)
+	if err != nil {
+		errcode := models.Error400("El id no es valido.")
+		c.JSON(errcode.Code, errcode)
+		return
+	}
+
+	resE := models.EliminarUsuario(idd)
+	if resE != nil {
+		c.JSON(resE.Code, resE)
+
+		return
+	}
+
 	c.JSON(200, gin.H{
 		"message": "EliminarUsuario:" + id,
 	})
+
 }
 
 func RemplanzarUsuario(c *gin.Context) {
@@ -171,16 +199,15 @@ func RemplanzarUsuario(c *gin.Context) {
 	// Aquí puedes usar los datos del usuario
 	nombre := usuario["Nombre"].(string)
 	apellidos := usuario["Apellidos"].(string)
-	corro := usuario["Correo"].(string)
+	correo := usuario["Correo"].(string)
+	password := usuario["Password"].(string)
 	cumpleanos := usuario["Cumpleanos"].(string)
 	imagen := usuario["Imagen"].(string)
 
-	if nombre == "" || apellidos == "" || corro == "" || cumpleanos == "" || imagen == "" {
-		c.JSON(400, gin.H{
-			"errno":             400,
-			"error":             "bad_request",
-			"error_description": "Faltan datos.",
-		})
+	if nombre == "" || apellidos == "" || correo == "" || password == "" || cumpleanos == "" || imagen == "" {
+		errcode := models.Error400("Faltan datos.")
+		c.JSON(errcode.Code, errcode)
+
 		return
 	}
 
@@ -190,19 +217,18 @@ func RemplanzarUsuario(c *gin.Context) {
 		return
 	}
 
-	_, resE := models.CrearUsuario(nombre, apellidos, corro, cumpleanos, imagen)
+	lastID, resE := models.CrearUsuario(nombre, apellidos, correo, password, cumpleanos, imagen)
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 
 		return
 	}
 
-	// user, resE := models.ObtenerUsuario(*idC)
-	// if resE != nil {
-	// 	c.JSON(resE.Code, resE)
+	user, resE := models.ObtenerUsuario(*lastID)
+	if resE != nil {
+		c.JSON(resE.Code, resE)
+		return
+	}
 
-	// 	return
-	// }
-
-	c.JSON(201, gin.H{})
+	c.JSON(200, user)
 }
