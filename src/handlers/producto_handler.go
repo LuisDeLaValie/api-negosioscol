@@ -50,15 +50,16 @@ func CrearProducto(c *gin.Context) {
 	descripcion := servisio["Descripcion"].(string)
 	imagen := servisio["Imagen"].(string)
 	unidad := servisio["Unidad"].(float64)
+	negocio := servisio["Negocio"].(float64)
 
-	if nombre == "" || descripcion == "" || imagen == "" || unidad == 0 {
+	if nombre == "" || descripcion == "" || imagen == "" || unidad == 0 || negocio == 0 {
 		errcode := models.Error400("Faltan datos.")
 		c.JSON(errcode.Code, errcode)
 
 		return
 	}
 
-	lastID, err := models.CrearProducto(nombre, descripcion, imagen, int64(unidad))
+	lastID, err := models.CrearProducto(nombre, descripcion, imagen, int64(unidad), int64(negocio))
 	if err != nil {
 		c.JSON(err.Code, err)
 
@@ -158,59 +159,59 @@ func EliminarProducto(c *gin.Context) {
 
 }
 
-func RemplanzarProducto(c *gin.Context) {
-	defer func() {
-		err := recover()
-		if err != nil {
-			errcode := models.Error500("Ocurrió un problema para procesar la solicitud:\n %v", err)
-			c.JSON(errcode.Code, errcode)
-		}
-	}()
+// func RemplanzarProducto(c *gin.Context) {
+// 	defer func() {
+// 		err := recover()
+// 		if err != nil {
+// 			errcode := models.Error500("Ocurrió un problema para procesar la solicitud:\n %v", err)
+// 			c.JSON(errcode.Code, errcode)
+// 		}
+// 	}()
 
-	id := c.Param("id")
-	idd, err := strconv.Atoi(id)
-	if err != nil {
-		c.JSON(400, models.Error400("El id no es valido."))
-		return
-	}
+// 	id := c.Param("id")
+// 	idd, err := strconv.Atoi(id)
+// 	if err != nil {
+// 		c.JSON(400, models.Error400("El id no es valido."))
+// 		return
+// 	}
 
-	var servisio map[string]interface{}
-	if err := c.ShouldBindJSON(&servisio); err != nil {
-		c.JSON(500, models.Error500("Ocurrió un problema para procesar la solicitud"+err.Error()))
-		return
-	}
+// 	var servisio map[string]interface{}
+// 	if err := c.ShouldBindJSON(&servisio); err != nil {
+// 		c.JSON(500, models.Error500("Ocurrió un problema para procesar la solicitud"+err.Error()))
+// 		return
+// 	}
 
-	// Aquí puedes usar los datos del servisio
-	nombre := servisio["Nombre"].(string)
-	descripcion := servisio["Descripcion"].(string)
-	imagen := servisio["Imagen"].(string)
-	unidad := servisio["Unidad"].(float64)
+// 	// Aquí puedes usar los datos del servisio
+// 	nombre := servisio["Nombre"].(string)
+// 	descripcion := servisio["Descripcion"].(string)
+// 	imagen := servisio["Imagen"].(string)
+// 	unidad := servisio["Unidad"].(float64)
 
-	if nombre == "" || descripcion == "" || imagen == "" || unidad == 0 {
-		errcode := models.Error400("Faltan datos.")
-		c.JSON(errcode.Code, errcode)
+// 	if nombre == "" || descripcion == "" || imagen == "" || unidad == 0 {
+// 		errcode := models.Error400("Faltan datos.")
+// 		c.JSON(errcode.Code, errcode)
 
-		return
-	}
+// 		return
+// 	}
 
-	if resE := models.EliminarProducto(idd); resE != nil {
-		c.JSON(resE.Code, resE)
+// 	if resE := models.EliminarProducto(idd); resE != nil {
+// 		c.JSON(resE.Code, resE)
 
-		return
-	}
+// 		return
+// 	}
 
-	lastID, resE := models.CrearProducto(nombre, descripcion, imagen, int64(int64(unidad)))
-	if resE != nil {
-		c.JSON(resE.Code, resE)
+// 	lastID, resE := models.CrearProducto(nombre, descripcion, imagen, int64(int64(unidad)))
+// 	if resE != nil {
+// 		c.JSON(resE.Code, resE)
 
-		return
-	}
+// 		return
+// 	}
 
-	servi, resE := models.ObtenerProducto(*lastID)
-	if resE != nil {
-		c.JSON(resE.Code, resE)
-		return
-	}
+// 	servi, resE := models.ObtenerProducto(*lastID)
+// 	if resE != nil {
+// 		c.JSON(resE.Code, resE)
+// 		return
+// 	}
 
-	c.JSON(200, servi)
-}
+// 	c.JSON(200, servi)
+// }

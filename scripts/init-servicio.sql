@@ -5,8 +5,11 @@ CREATE TABLE Servisio (
     Descripcion TEXT,
     Imagen VARCHAR(255),
     Unidad BIGINT,
+    IDNegocio INTEGER NOT NULL,
     Creado TIMESTAMP DEFAULT NOW(),
-    Actualizado TIMESTAMP DEFAULT NOW()
+    Actualizado TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_negocio FOREIGN KEY (IDNegocio) REFERENCES Negocio(IDNegocio) ON DELETE CASCADE
+
 );
 
 
@@ -14,13 +17,14 @@ CREATE OR REPLACE PROCEDURE RegistrarServisio(
     p_Nombre VARCHAR(255),
     p_Descripcion TEXT,
     p_Imagen VARCHAR(255),
-    p_Unidad BIGINT
+    p_Unidad BIGINT,
+    p_IDNegocio INT
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    INSERT INTO Servisio (Nombre, Descripcion, Imagen, Unidad, Creado, Actualizado)
-    VALUES (p_Nombre, p_Descripcion, p_Imagen, p_Unidad, NOW(), NOW());
+    INSERT INTO Servisio (Nombre, Descripcion, Imagen, Unidad, IDNegocio, Creado, Actualizado)
+    VALUES (p_Nombre, p_Descripcion, p_Imagen, p_Unidad, p_IDNegocio, NOW(), NOW());
 END;
 $$;
 

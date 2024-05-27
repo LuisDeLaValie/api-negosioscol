@@ -4,21 +4,25 @@ CREATE TABLE Producto (
     Descripsion TEXT,
     Imagen VARCHAR(255),
     Unidad BIGINT,
+    IDNegocio INTEGER NOT NULL,
     Creado TIMESTAMP DEFAULT NOW(),
-    Actualizado TIMESTAMP DEFAULT NOW()
+    Actualizado TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_negocio FOREIGN KEY (IDNegocio) REFERENCES Negocio(IDNegocio) ON DELETE CASCADE
+
 );
 
 CREATE OR REPLACE PROCEDURE RegistrarProducto(
     p_Nombre VARCHAR(255),
     p_Descripsion TEXT,
     p_Imagen VARCHAR(255),
-    p_Unidad BIGINT
+    p_Unidad BIGINT,
+    p_IDNegocio INT
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    INSERT INTO Producto (Nombre, Descripsion, Imagen, Unidad, Creado, Actualizado)
-    VALUES (p_Nombre, p_Descripsion, p_Imagen, p_Unidad, NOW(), NOW());
+    INSERT INTO Producto (Nombre, Descripsion, Imagen, Unidad, IDNegocio, Creado, Actualizado)
+    VALUES (p_Nombre, p_Descripsion, p_Imagen, p_Unidad, p_IDNegocio, NOW(), NOW());
 END;
 $$;
 

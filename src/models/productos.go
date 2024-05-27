@@ -17,7 +17,7 @@ type Producto struct {
 	Actualizado time.Time `json:"Actualizado"`
 }
 
-func CrearProducto(nombre string, descripcion string, imagen string, unidad int64) (*int64, *ErrorStatusCode) {
+func CrearProducto(nombre string, descripcion string, imagen string, unidad int64, negocio int64) (*int64, *ErrorStatusCode) {
 
 	db, err := db.ConnectDB()
 	if err != nil {
@@ -25,13 +25,13 @@ func CrearProducto(nombre string, descripcion string, imagen string, unidad int6
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("CALL registrarproducto($1, $2, $3, $4);")
+	stmt, err := db.Prepare("CALL registrarproducto($1, $2, $3, $4, $5);")
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(nombre, descripcion, imagen, unidad)
+	_, err = stmt.Exec(nombre, descripcion, imagen, unidad, negocio)
 	if err != nil {
 		return nil, Error500(err.Error())
 	}

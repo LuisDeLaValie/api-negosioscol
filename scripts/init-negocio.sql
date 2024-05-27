@@ -1,6 +1,6 @@
 
 CREATE TABLE Negocio (
-    ID SERIAL PRIMARY KEY,
+    IDNegocio SERIAL PRIMARY KEY,
     Nombre VARCHAR(255) NOT NULL,
     Descripsion TEXT,
     Direccion VARCHAR(255),
@@ -117,3 +117,7 @@ BEGIN
                  WHERE Negocio.ID = id_negocio;
 END;
 $$ LANGUAGE plpgsql;
+
+CALL public.registrarnegocio('carpinteria', 'tienda de carpinteria', ':p_direccion', ':p_telefono', ':p_correo', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
+CALL public.registrarnegocio('ferreteria', 'tienda de fereteria', ':p_direccion', ':p_telefono', ':p_correo', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
+CALL public.registrarnegocio('piezeria', 'tienda de pizza', ':p_direccion', ':p_telefono', ':p_correo', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
