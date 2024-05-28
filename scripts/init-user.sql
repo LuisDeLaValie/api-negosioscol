@@ -87,3 +87,6 @@ BEGIN
                  WHERE Usuario.ID = id_usuario;
 END;
 $$ LANGUAGE plpgsql;
+
+
+CALL registrarusuario('Luis Emilio', 'Partida Contreras', 'TDTxLE@gmail.com', 'pollo1', '2000-02-21', 'https://avatars.githubusercontent.com/u/34776956?v=4');

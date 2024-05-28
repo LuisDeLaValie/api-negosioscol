@@ -86,6 +86,25 @@ func main() {
 			servicios.DELETE("/:id", handlers.EliminarServisio)
 		}
 
+		negocio := api.Group("/negocios")
+		{
+			// Ruta para obtener un usuario por su ID (GET)
+			// negocio.GET("/", handlers.Get)
+			negocio.GET("/:id", handlers.GetNegocioPorID)
+			negocio.GET("/servisios/:id", handlers.GetServicioNegocioPorID)
+			negocio.GET("/productos/:id", handlers.GetProductoNegocioPorID)
+
+			// Ruta para crear un nuevo usuario (POST)
+			negocio.POST("", handlers.CrearNegocio)
+
+			// Ruta para actualizar un usuario existente (PUT)
+			negocio.PUT("/:id", handlers.ActualizarNegocio)
+			// negocio.PATCH("/:id", handlers.RemplanzarNegocio)
+
+			// Ruta para eliminar un usuario (DELETE)
+			negocio.DELETE("/:id", handlers.EliminarNegocio)
+		}
+
 		producto := api.Group("/producto")
 		{
 			// Ruta para obtener un usuario por su ID (GET)

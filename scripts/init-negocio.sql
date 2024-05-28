@@ -72,7 +72,7 @@ BEGIN
         Instagram = p_Instagram,
         Website = p_Website,
         Actualizado = NOW()
-    WHERE ID = p_ID;
+    WHERE IDNegocio = p_ID;
 END;
 $$;
 
@@ -87,7 +87,7 @@ DECLARE
     filas_eliminadas INT;
 BEGIN
     DELETE FROM Negocio
-    WHERE ID = p_ID;
+    WHERE IDNegocio = p_ID;
     GET DIAGNOSTICS filas_eliminadas = ROW_COUNT;
     RETURN filas_eliminadas;
 END;
@@ -95,7 +95,7 @@ $$;
 
 CREATE OR REPLACE FUNCTION ObtenerNegocio(id_negocio INTEGER)
 RETURNS TABLE (
-    ID INTEGER,
+    IDNegocio INTEGER,
     Nombre VARCHAR(255),
     Descripsion TEXT,
     Direccion VARCHAR(255),
@@ -112,9 +112,9 @@ RETURNS TABLE (
     Actualizado TIMESTAMP
 ) AS $$
 BEGIN
-    RETURN QUERY SELECT Negocio.ID, Negocio.Nombre, Negocio.Descripsion, Negocio.Direccion, Negocio.Telefono, Negocio.Correo, Negocio.Imagen, Negocio.Latitude, Negocio.Longitude, Negocio.Facebook, Negocio.Twitter, Negocio.Instagram, Negocio.Website, Negocio.Creado, Negocio.Actualizado
+    RETURN QUERY SELECT Negocio.IDNegocio, Negocio.Nombre, Negocio.Descripsion, Negocio.Direccion, Negocio.Telefono, Negocio.Correo, Negocio.Imagen, Negocio.Latitude, Negocio.Longitude, Negocio.Facebook, Negocio.Twitter, Negocio.Instagram, Negocio.Website, Negocio.Creado, Negocio.Actualizado
                  FROM Negocio
-                 WHERE Negocio.ID = id_negocio;
+                 WHERE Negocio.IDNegocio = id_negocio;
 END;
 $$ LANGUAGE plpgsql;
 

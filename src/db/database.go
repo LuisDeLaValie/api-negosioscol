@@ -3,25 +3,33 @@ package db
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"database/sql"
 
 	//Postgres Driver imported
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 // ConnectDB connect to Postgres DB
 func ConnectDB() (*sql.DB, error) {
-	var (
-		host     = "postgresql"
-		port     = 5432
-		user     = "postgres"
-		password = "postgres"
-		name     = "NegociosCol"
-	)
+
+	// Cargar las variables de entorno del archivo .env
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error al cargar el archivo .env: %v", err)
+	}
+
+	// Obtener la URL de conexión de PostgreSQL de las variables de entorno
+	postgresURL := os.Getenv("ConnectPosgreSQL")
+	if postgresURL == "" {
+		log.Fatal("La variable POSTGRES_URL no está definida en el archivo .env")
+	}
+
 	//Connect to DB
 	var DB *sql.DB
-	DB, err := sql.Open("postgres", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, name))
+	DB, err = sql.Open("postgres", postgresURL)
 
 	if err != nil {
 		log.Fatalf(err.Error())
