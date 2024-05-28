@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"negosioscol/src/handlers"
 	"negosioscol/src/models"
+	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -123,7 +125,10 @@ func main() {
 		}
 
 	}
-
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 	// Run the application
-	router.Run(":3000")
+	router.Run(fmt.Sprintf(":%s", port))
 }
