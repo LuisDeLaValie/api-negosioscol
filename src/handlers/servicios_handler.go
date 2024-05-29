@@ -55,7 +55,6 @@ func CrearServisio(c *gin.Context) {
 	if nombre == "" || descripcion == "" || imagen == "" || unidad == 0 || negocio == 0 {
 		errcode := models.Error400("Faltan datos.")
 		c.JSON(errcode.Code, errcode)
-
 		return
 	}
 	lastID, err := models.CrearServisio(nombre, descripcion, imagen, int64(unidad), int64(negocio))

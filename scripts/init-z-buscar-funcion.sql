@@ -10,26 +10,57 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
+    -- Buscar negocios
     SELECT 
-        n.idnegocio ,
-        p.idproducto ,
-        s.idservicio ,
-        n.nombre as negocio,
-        COALESCE(p.nombre , s.nombre) AS nombre,
-        COALESCE(p.descripsion , s.descripcion, n.descripsion) AS descripcion,
-        COALESCE(p.imagen , s.imagen, n.imagen  ) AS imagen
+        n.idnegocio,
+        NULL::integer AS idproducto,
+        NULL::integer AS idservicio,
+        n.nombre AS negocio,
+        n.nombre,
+        n.descripsion AS descripcion,
+        n.imagen
     FROM 
         Negocio n
-    LEFT JOIN 
-        Servisio s ON s.idnegocio  = n.idnegocio 
-    LEFT JOIN 
-        Producto p ON p.idnegocio  = n.idnegocio
     WHERE
         n.nombre ILIKE '%' || p_termino || '%'
-        OR p.nombre ILIKE '%' || p_termino || '%'
-        OR s.nombre ILIKE '%' || p_termino || '%'
         OR n.descripsion ILIKE '%' || p_termino || '%'
-        OR s.descripcion ILIKE '%' || p_termino || '%'
-        OR p.descripsion ILIKE '%' || p_termino || '%';
+    
+    UNION ALL
+    
+    -- Buscar productos
+    SELECT 
+        p.idnegocio  AS idnegocio,
+        p.idproducto,
+        NULL::integer AS idservicio,
+        n.nombre  AS negocio,
+        p.nombre,
+        p.descripsion AS descripcion,
+        p.imagen
+    FROM 
+        Producto p
+	JOIN 
+        negocio n ON p.idnegocio  = n.idnegocio 
+    WHERE
+        p.nombre ILIKE '%' || p_termino || '%'
+        OR p.descripsion ILIKE '%' || p_termino || '%'
+    
+    UNION ALL
+    
+    -- Buscar servicios
+    SELECT 
+        s.idnegocio  AS idnegocio,
+        NULL::integer AS idproducto,
+        s.idservicio,
+        n.nombre AS negocio,
+        s.nombre,
+        s.descripcion AS descripcion,
+        s.imagen
+    FROM 
+        Servisio s
+	JOIN 
+        negocio n ON s.idnegocio  = n.idnegocio 
+    WHERE
+        s.nombre ILIKE '%' || p_termino || '%'
+        OR s.descripcion ILIKE '%' || p_termino || '%';
 END;
 $$ LANGUAGE plpgsql;
