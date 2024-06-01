@@ -177,7 +177,7 @@ func Login(use string, pass string) (*Usuario, *ErrorStatusCode) {
 			return nil, Error500(err.Error())
 		}
 	} else {
-		return nil, &ErrorStatusCode{Message: "Correo electronico o contraseña incorectos", Code: 200, Errorr: "Usuario no encontrado"}
+		return nil, Error401("Correo electronico o contraseña incorectos")
 	}
 
 	return &usuario, nil
