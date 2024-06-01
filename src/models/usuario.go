@@ -98,6 +98,7 @@ func EliminarUsuario(id int) *ErrorStatusCode {
 	return nil
 
 }
+
 func ObtenerUsuario(id int64) (*Usuario, *ErrorStatusCode) {
 
 	db, err := db.ConnectDB()
@@ -135,6 +136,48 @@ func ObtenerUsuario(id int64) (*Usuario, *ErrorStatusCode) {
 		}
 	} else {
 		return nil, Error404(fmt.Sprintf("No se encontro el usuario %d", id))
+	}
+
+	return &usuario, nil
+}
+
+func Login(use string, pass string) (*Usuario, *ErrorStatusCode) {
+
+	db, err := db.ConnectDB()
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare("SELECT * FROM usuario u WHERE u.correo = $1 AND u.password = $2")
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
+	defer stmt.Close()
+
+	resul, err := stmt.Query(use, pass)
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
+
+	var usuario Usuario
+	if resul.Next() {
+		err = resul.Scan(
+			&usuario.IDUsuario,
+			&usuario.Nombre,
+			&usuario.Apellidos,
+			&usuario.Correo,
+			&usuario.Password,
+			&usuario.Creado,
+			&usuario.Actualizado,
+			&usuario.Cumpleanos,
+			&usuario.Imagen,
+		)
+		if err != nil {
+			return nil, Error500(err.Error())
+		}
+	} else {
+		return nil, &ErrorStatusCode{Message: "Correo electronico o contraseña incorectos", Code: 200, Errorr: "Usuario no encontrado"}
 	}
 
 	return &usuario, nil

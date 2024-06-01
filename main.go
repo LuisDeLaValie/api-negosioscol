@@ -53,6 +53,7 @@ func main() {
 
 			c.JSON(200, servi)
 		})
+		api.POST("/login", handlers.Longin)
 
 		usuarios := api.Group("/usuarios")
 		{

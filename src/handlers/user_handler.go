@@ -26,6 +26,44 @@ func GetUsuarioPorID(c *gin.Context) {
 	c.JSON(200, user)
 }
 
+// Obtener un usuario por su ID
+func Longin(c *gin.Context) {
+	defer func() {
+		err := recover()
+		if err != nil {
+			errcode := models.Error500("Ocurrió un problema para procesar la solicitud:\n %v", err)
+			c.JSON(errcode.Code, errcode)
+		}
+	}()
+
+	var usuario map[string]interface{}
+	if err := c.ShouldBindJSON(&usuario); err != nil {
+		errcode := models.Error500("Ocurrió un problema para procesar la solicitud" + err.Error())
+		c.JSON(errcode.Code, errcode)
+
+		return
+	}
+
+	// Aquí puedes usar los datos del usuario
+	correo := usuario["Correo"].(string)
+	password := usuario["Password"].(string)
+
+	if correo == "" || password == "" {
+		errcode := models.Error400("Faltan datos.")
+		c.JSON(errcode.Code, errcode)
+
+		return
+	}
+
+	user, resE := models.Login(correo, password)
+	if resE != nil {
+		c.JSON(resE.Code, resE)
+		return
+	}
+
+	c.JSON(200, user)
+}
+
 // Crear un nuevo usuario
 func CrearUsuario(c *gin.Context) {
 
