@@ -25,13 +25,15 @@ func ConnectDB() (*sql.DB, error) {
 			fmt.Printf("Error al cargar el archivo .env: %v", err)
 		}
 
-		postgresURL := os.Getenv("ConnectPosgreSQL")
+		postgresURL = os.Getenv("ConnectPosgreSQL")
 		if postgresURL == "" {
 
 			log.Fatal("La variable ConnectPosgreSQL no está definida en el archivo .env")
 		}
+		fmt.Println(postgresURL)
 	}
 
+	fmt.Println(postgresURL)
 	//Connect to DB
 	var DB *sql.DB
 	DB, err := sql.Open("postgres", postgresURL)
