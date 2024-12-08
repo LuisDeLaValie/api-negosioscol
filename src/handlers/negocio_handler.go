@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"negosioscol/src/models"
+	"negosioscol/src/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -70,6 +71,7 @@ func CrearNegocio(c *gin.Context) {
 
 	// Validación de datos obligatorios
 	nombre, okNombre := negocio["nombre"].(string)
+	password, okPassword := negocio["password"].(string)
 	descripcion, okDescripcion := negocio["descripcion"].(string)
 	direccion, okDireccion := negocio["direccion"].(string)
 	telefono, okTelefono := negocio["telefono"].(string)
@@ -95,14 +97,14 @@ func CrearNegocio(c *gin.Context) {
 	fmt.Printf("latitude: %f - %t\n", latitude, okLatitude)
 	fmt.Printf("longitude: %f - %t\n", longitude, okLongitude)
 
-	if !okNombre || !okDescripcion || !okDireccion || !okTelefono || !okCorreo || !okImagen || !okLatitude || !okLongitude {
+	if !okNombre || !okPassword || !okDescripcion || !okDireccion || !okTelefono || !okCorreo || !okImagen || !okLatitude || !okLongitude {
 		errcode := models.Error400("Faltan datos obligatorios o tienen el formato incorrecto.")
 		c.JSON(errcode.Code, errcode)
 		return
 	}
 
 	// Llamada al modelo
-	lastID, err := models.CrearNegocio(nombre, descripcion, direccion, telefono, correo, imagen, latitude, longitude, &facebook, &twitter, &instagram, &website)
+	lastID, err := models.CrearNegocio(nombre, password, descripcion, direccion, telefono, correo, imagen, latitude, longitude, &facebook, &twitter, &instagram, &website)
 	if err != nil {
 		c.JSON(err.Code, err)
 		return
@@ -135,34 +137,36 @@ func ActualizarNegocio(c *gin.Context) {
 		return
 	}
 
-	var servisio map[string]interface{}
-	if err := c.ShouldBindJSON(&servisio); err != nil {
-		c.JSON(500, models.Error500("Ocurrió un problema para procesar la solicitud"+err.Error()))
-		return
-	}
-
 	negocio := struct {
-		Nombre      string  `json:"Nombre"`
-		Descripcion string  `json:"Descripcion"`
-		Direccion   string  `json:"Direccion"`
-		Telefono    string  `json:"Telefono"`
-		Correo      string  `json:"Correo"`
-		Imagen      string  `json:"Imagen"`
-		Latitude    float64 `json:"Latitude"`
-		Longitude   float64 `json:"Longitude"`
-		Facebook    string  `json:"Facebook,omitempty"`
-		Twitter     string  `json:"Twitter,omitempty"`
-		Instagram   string  `json:"Instagram,omitempty"`
-		Website     string  `json:"Website,omitempty"`
+		Nombre      string `json:"nombre"`
+		Password    string `json:"password,omitempty"`
+		Descripcion string `json:"descripcion"`
+		Direccion   string `json:"direccion"`
+		Telefono    string `json:"telefono"`
+		Correo      string `json:"correo"`
+		// Imagen      string  `json:"imagen"`
+		Latitude  float64 `json:"latitude"`
+		Longitude float64 `json:"longitude"`
+		Facebook  string  `json:"facebook,omitempty"`
+		Twitter   string  `json:"twitter,omitempty"`
+		Instagram string  `json:"instagram,omitempty"`
+		Website   string  `json:"website,omitempty"`
 	}{}
 
-	if err := c.ShouldBind(&negocio); err != nil {
+	if err := c.ShouldBindJSON(&negocio); err != nil {
 		errcode := models.Error400(err.Error())
 		c.JSON(errcode.Code, errcode)
 		return
 	}
 
-	resE := models.EditarNegocio(idd, negocio.Nombre, negocio.Direccion, negocio.Direccion, negocio.Telefono, negocio.Correo, negocio.Imagen, negocio.Latitude, negocio.Longitude, &negocio.Facebook, &negocio.Twitter, &negocio.Instagram, &negocio.Website)
+	imagen, resE := utils.SubirImagen(c, "imagen")
+	if resE != nil {
+		c.JSON(resE.Code, resE)
+
+		return
+	}
+
+	resE = models.EditarNegocio(idd, negocio.Nombre, negocio.Password, negocio.Direccion, negocio.Direccion, negocio.Telefono, negocio.Correo, *imagen, negocio.Latitude, negocio.Longitude, &negocio.Facebook, &negocio.Twitter, &negocio.Instagram, &negocio.Website)
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 
@@ -244,4 +248,41 @@ func GetProductoNegocioPorID(c *gin.Context) {
 	}
 
 	c.JSON(200, servi)
+}
+
+func LonginNegocio(c *gin.Context) {
+	defer func() {
+		err := recover()
+		if err != nil {
+			errcode := models.Error500("Ocurrió un problema para procesar la solicitud:\n %v", err)
+			c.JSON(errcode.Code, errcode)
+		}
+	}()
+
+	var usuario map[string]interface{}
+	if err := c.ShouldBindJSON(&usuario); err != nil {
+		errcode := models.Error500("Ocurrió un problema para procesar la solicitud" + err.Error())
+		c.JSON(errcode.Code, errcode)
+
+		return
+	}
+
+	// Aquí puedes usar los datos del usuario
+	correo := usuario["Correo"].(string)
+	password := usuario["Password"].(string)
+
+	if correo == "" || password == "" {
+		errcode := models.Error400("Faltan datos.")
+		c.JSON(errcode.Code, errcode)
+
+		return
+	}
+
+	user, resE := models.LonginNegocio(correo, password)
+	if resE != nil {
+		c.JSON(resE.Code, resE)
+		return
+	}
+
+	c.JSON(200, user)
 }

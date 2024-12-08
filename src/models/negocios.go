@@ -8,24 +8,25 @@ import (
 )
 
 type Negocio struct {
-	IDNegocio   int64     `json:"Id_Negocio"`
-	Nombre      string    `json:"Nombre"`
-	Descripsion string    `json:"Descripsion"`
-	Direccion   string    `json:"Direccion"`
-	Telefono    string    `json:"Telefono"`
-	Correo      string    `json:"Correo"`
-	Imagen      string    `json:"Imagen"`
-	Latitude    float64   `json:"Latitude"`
-	Longitude   float64   `json:"Longitude"`
-	Facebook    string    `json:"Facebook,omitempty"`
-	Twitter     string    `json:"Twitter,omitempty"`
-	Instagram   string    `json:"Instagram,omitempty"`
-	Website     string    `json:"Website,omitempty"`
-	Creado      time.Time `json:"Creado"`
-	Actualizado time.Time `json:"Actualizado"`
+	IDNegocio   int64     `json:"id_Negocio"`
+	Nombre      string    `json:"nombre"`
+	Descripsion string    `json:"descripcion"`
+	Password    string    `json:"password,omitempty"`
+	Direccion   string    `json:"direccion"`
+	Telefono    string    `json:"telefono"`
+	Correo      string    `json:"correo"`
+	Imagen      string    `json:"imagen"`
+	Latitude    float64   `json:"latitude"`
+	Longitude   float64   `json:"longitude"`
+	Facebook    string    `json:"facebook,omitempty"`
+	Twitter     string    `json:"twitter,omitempty"`
+	Instagram   string    `json:"instagram,omitempty"`
+	Website     string    `json:"website,omitempty"`
+	Creado      time.Time `json:"creado"`
+	Actualizado time.Time `json:"actualizado"`
 }
 
-func CrearNegocio(nombre string, descripcion string, direccion string, telefono string, correo string, imagen string, latitud float64, longitud float64, facebook *string, twitter *string, instagra *string, website *string) (*int64, *ErrorStatusCode) {
+func CrearNegocio(nombre string, password string, descripcion string, direccion string, telefono string, correo string, imagen string, latitud float64, longitud float64, facebook *string, twitter *string, instagra *string, website *string) (*int64, *ErrorStatusCode) {
 
 	db, err := db.ConnectDB()
 	if err != nil {
@@ -33,13 +34,13 @@ func CrearNegocio(nombre string, descripcion string, direccion string, telefono 
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("CALL registrarnegocio($1, $2, $3, $4, $5, $6, $7 $8, $9 $20, $11, $12);")
+	stmt, err := db.Prepare("CALL registrarnegocio($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);")
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(nombre, descripcion, direccion, telefono, correo, imagen, latitud, longitud, facebook, twitter, instagra, website)
+	_, err = stmt.Exec(nombre, password, descripcion, direccion, telefono, correo, imagen, latitud, longitud, facebook, twitter, instagra, website)
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
@@ -54,7 +55,7 @@ func CrearNegocio(nombre string, descripcion string, direccion string, telefono 
 	return &lastID, nil
 
 }
-func EditarNegocio(id int, nombre string, descripcion string, direccion string, telefono string, correo string, imagen string, latitud float64, longitud float64, facebook *string, twitter *string, instagra *string, website *string) *ErrorStatusCode {
+func EditarNegocio(id int, nombre string, password string, descripcion string, direccion string, telefono string, correo string, imagen string, latitud float64, longitud float64, facebook *string, twitter *string, instagra *string, website *string) *ErrorStatusCode {
 
 	db, err := db.ConnectDB()
 	if err != nil {
@@ -62,13 +63,13 @@ func EditarNegocio(id int, nombre string, descripcion string, direccion string, 
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("CALL actualizarnegocio($1, $2, $3, $4, $5, $6, $7 $8, $9 $20, $11, $12, $13);")
+	stmt, err := db.Prepare("CALL actualizarnegocio($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14);")
 	if err != nil {
 		return Error500(err.Error())
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(id, nombre, descripcion, direccion, telefono, correo, imagen, latitud, longitud, facebook, twitter, instagra, website)
+	_, err = stmt.Exec(id, nombre, password, descripcion, direccion, telefono, correo, imagen, latitud, longitud, facebook, twitter, instagra, website)
 	if err != nil {
 		return Error500(err.Error())
 	}
@@ -242,7 +243,7 @@ func ObtenerUltimosNegocios() (*[]Negocio, *ErrorStatusCode) {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("SELECT * FROM negocio ORDER BY Creado DESC LIMIT 10;")
+	stmt, err := db.Prepare("SELECT IDNegocio, Nombre, Descripsion, Direccion, Telefono, Correo, Imagen, Latitude, Longitude, Facebook, Twitter, Instagram, Website, Creado, Actualizado FROM negocio ORDER BY Creado DESC LIMIT 10;")
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
@@ -281,4 +282,52 @@ func ObtenerUltimosNegocios() (*[]Negocio, *ErrorStatusCode) {
 	}
 
 	return &resultados, nil
+}
+
+func LonginNegocio(use string, pass string) (*Negocio, *ErrorStatusCode) {
+
+	db, err := db.ConnectDB()
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare("SELECT u.IDNegocio, u.Nombre, u.Descripsion, u.Direccion, u.Telefono, u.Correo, u.Imagen, u.Latitude, u.Longitude, u.Facebook, u.Twitter, u.Instagram, u.Website, u.Creado, u.Actualizado FROM Negocio u WHERE u.Correo = $1 AND u.Password = $2")
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
+	defer stmt.Close()
+
+	resul, err := stmt.Query(use, pass)
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
+
+	var negocio Negocio
+	if resul.Next() {
+		err = resul.Scan(
+			&negocio.IDNegocio,
+			&negocio.Nombre,
+			&negocio.Descripsion,
+			&negocio.Direccion,
+			&negocio.Telefono,
+			&negocio.Correo,
+			&negocio.Imagen,
+			&negocio.Latitude,
+			&negocio.Longitude,
+			&negocio.Facebook,
+			&negocio.Twitter,
+			&negocio.Instagram,
+			&negocio.Website,
+			&negocio.Creado,
+			&negocio.Actualizado,
+		)
+		if err != nil {
+			return nil, Error500(err.Error())
+		}
+	} else {
+		return nil, Error401("Correo electronico o contraseña incorectos")
+	}
+
+	return &negocio, nil
 }

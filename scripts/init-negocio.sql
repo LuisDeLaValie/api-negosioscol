@@ -2,6 +2,7 @@
 CREATE TABLE Negocio (
     IDNegocio SERIAL PRIMARY KEY,
     Nombre VARCHAR(255) NOT NULL,
+    Password VARCHAR(255) NOT NULL,
     Descripsion TEXT,
     Direccion VARCHAR(255),
     Telefono VARCHAR(50),
@@ -18,8 +19,10 @@ CREATE TABLE Negocio (
 );
 
 
+
 CREATE OR REPLACE PROCEDURE RegistrarNegocio(
     p_Nombre VARCHAR(255),
+    p_Password VARCHAR(255),
     p_Descripsion TEXT,
     p_Direccion VARCHAR(255),
     p_Telefono VARCHAR(50),
@@ -35,14 +38,15 @@ CREATE OR REPLACE PROCEDURE RegistrarNegocio(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    INSERT INTO Negocio (Nombre, Descripsion, Direccion, Telefono, Correo, Imagen, Latitude, Longitude, Facebook, Twitter, Instagram, Website, Creado, Actualizado)
-    VALUES (p_Nombre, p_Descripsion, p_Direccion, p_Telefono, p_Correo, p_Imagen, p_Latitude, p_Longitude, p_Facebook, p_Twitter, p_Instagram, p_Website, NOW(), NOW());
+    INSERT INTO Negocio (Nombre, Password, Descripsion, Direccion, Telefono, Correo, Imagen, Latitude, Longitude, Facebook, Twitter, Instagram, Website, Creado, Actualizado)
+    VALUES (p_Nombre, p_Password, p_Descripsion, p_Direccion, p_Telefono, p_Correo, p_Imagen, p_Latitude, p_Longitude, p_Facebook, p_Twitter, p_Instagram, p_Website, NOW(), NOW());
 END;
 $$;
 
 CREATE OR REPLACE PROCEDURE ActualizarNegocio(
     p_ID INT,
     p_Nombre VARCHAR(255),
+    p_Password VARCHAR(255),
     p_Descripsion TEXT,
     p_Direccion VARCHAR(255),
     p_Telefono VARCHAR(50),
@@ -61,6 +65,7 @@ BEGIN
     UPDATE Negocio
     SET Nombre = p_Nombre,
         Descripsion = p_Descripsion,
+        Password = p_Password,
         Direccion = p_Direccion,
         Telefono = p_Telefono,
         Correo = p_Correo,
@@ -118,6 +123,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CALL public.registrarnegocio('carpinteria', 'tienda de carpinteria', ':p_direccion', ':p_telefono', ':p_correo', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
-CALL public.registrarnegocio('ferreteria', 'tienda de fereteria', ':p_direccion', ':p_telefono', ':p_correo', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
-CALL public.registrarnegocio('piezeria', 'tienda de pizza', ':p_direccion', ':p_telefono', ':p_correo', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
+CALL public.registrarnegocio('carpinteria', 'hola_mundo', 'tienda de carpinteria', ':p_direccion', ':p_telefono', ':p_correo', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
+CALL public.registrarnegocio('ferreteria', 'hola_mundo', 'tienda de fereteria', ':p_direccion', ':p_telefono', ':p_correo', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
+CALL public.registrarnegocio('piezeria', 'hola_mundo', 'tienda de pizza', ':p_direccion', ':p_telefono', ':p_correo', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
