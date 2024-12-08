@@ -39,10 +39,16 @@ BEGIN
     UPDATE Producto
     SET Nombre = p_Nombre,
         Descripsion = p_Descripsion,
-        Imagen = p_Imagen,
         Unidad = p_Unidad,
         Actualizado = NOW()
     WHERE IDProducto = p_ID;
+
+    -- Actualizar Imagen solo si se proporciona
+    IF p_Imagen IS NOT NULL THEN
+        UPDATE Producto
+        SET Imagen = p_Imagen
+        WHERE IDNegocio = p_ID;
+    END IF;
 END;
 $$;
 

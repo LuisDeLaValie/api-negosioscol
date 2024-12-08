@@ -55,7 +55,7 @@ func CrearNegocio(nombre string, password string, descripcion string, direccion 
 	return &lastID, nil
 
 }
-func EditarNegocio(id int, nombre string, password string, descripcion string, direccion string, telefono string, correo string, imagen string, latitud float64, longitud float64, facebook *string, twitter *string, instagra *string, website *string) *ErrorStatusCode {
+func EditarNegocio(id int, nombre string, password string, descripcion string, direccion string, telefono string, correo string, imagen *string, latitud float64, longitud float64, facebook *string, twitter *string, instagra *string, website *string) *ErrorStatusCode {
 
 	db, err := db.ConnectDB()
 	if err != nil {

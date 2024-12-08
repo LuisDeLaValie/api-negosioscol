@@ -61,50 +61,37 @@ func CrearNegocio(c *gin.Context) {
 		}
 	}()
 
-	var negocio map[string]interface{}
+	negocio := struct {
+		Nombre      string `form:"nombre"`
+		Password    string `form:"password,omitempty"`
+		Descripcion string `form:"descripcion"`
+		Direccion   string `form:"direccion"`
+		Telefono    string `form:"telefono"`
+		Correo      string `form:"correo"`
+		// Imagen      string  `form:"imagen"`
+		Latitude  float64 `form:"latitude"`
+		Longitude float64 `form:"longitude"`
+		Facebook  string  `form:"facebook,omitempty"`
+		Twitter   string  `form:"twitter,omitempty"`
+		Instagram string  `form:"instagram,omitempty"`
+		Website   string  `form:"website,omitempty"`
+	}{}
 
-	if err := c.ShouldBindJSON(&negocio); err != nil {
-		errcode := models.Error500("Ocurrió 000 un problema para procesar la solicitud: " + err.Error())
+	if err := c.ShouldBind(&negocio); err != nil {
+		errcode := models.Error400("Error al procesar los datos: " + err.Error())
 		c.JSON(errcode.Code, errcode)
 		return
 	}
 
-	// Validación de datos obligatorios
-	nombre, okNombre := negocio["nombre"].(string)
-	password, okPassword := negocio["password"].(string)
-	descripcion, okDescripcion := negocio["descripcion"].(string)
-	direccion, okDireccion := negocio["direccion"].(string)
-	telefono, okTelefono := negocio["telefono"].(string)
-	correo, okCorreo := negocio["correo"].(string)
-	imagen, okImagen := negocio["imagen"].(string)
-	latitude, okLatitude := negocio["latitude"].(float64)
-	longitude, okLongitude := negocio["longitude"].(float64)
-
-	// Validación de redes sociales (opcionales)
-	facebook, _ := negocio["Facebook"].(string)
-	twitter, _ := negocio["Twitter"].(string)
-	instagram, _ := negocio["Instagram"].(string)
-	website, _ := negocio["Website"].(string)
-
 	fmt.Println(negocio)
-
-	fmt.Printf("nombre: %s - %t\n", nombre, okNombre)
-	fmt.Printf("descripcion: %s - %t\n", descripcion, okDescripcion)
-	fmt.Printf("direccion: %s - %t\n", direccion, okDireccion)
-	fmt.Printf("telefono: %s - %t\n", telefono, okTelefono)
-	fmt.Printf("correo: %s - %t\n", correo, okCorreo)
-	fmt.Printf("imagen: %s - %t\n", imagen, okImagen)
-	fmt.Printf("latitude: %f - %t\n", latitude, okLatitude)
-	fmt.Printf("longitude: %f - %t\n", longitude, okLongitude)
-
-	if !okNombre || !okPassword || !okDescripcion || !okDireccion || !okTelefono || !okCorreo || !okImagen || !okLatitude || !okLongitude {
-		errcode := models.Error400("Faltan datos obligatorios o tienen el formato incorrecto.")
-		c.JSON(errcode.Code, errcode)
+	imagen, resE := utils.UploadToS3(c, "imagen")
+	if resE != nil {
+		c.JSON(resE.Code, resE)
 		return
 	}
 
 	// Llamada al modelo
-	lastID, err := models.CrearNegocio(nombre, password, descripcion, direccion, telefono, correo, imagen, latitude, longitude, &facebook, &twitter, &instagram, &website)
+	lastID, err := models.CrearNegocio(negocio.Nombre, negocio.Password, negocio.Descripcion, negocio.Direccion, negocio.Telefono, negocio.Correo, *imagen, negocio.Latitude, negocio.Longitude, &negocio.Facebook, &negocio.Twitter, &negocio.Instagram, &negocio.Website)
 	if err != nil {
 		c.JSON(err.Code, err)
 		return
@@ -138,35 +125,38 @@ func ActualizarNegocio(c *gin.Context) {
 	}
 
 	negocio := struct {
-		Nombre      string `json:"nombre"`
-		Password    string `json:"password,omitempty"`
-		Descripcion string `json:"descripcion"`
-		Direccion   string `json:"direccion"`
-		Telefono    string `json:"telefono"`
-		Correo      string `json:"correo"`
-		// Imagen      string  `json:"imagen"`
-		Latitude  float64 `json:"latitude"`
-		Longitude float64 `json:"longitude"`
-		Facebook  string  `json:"facebook,omitempty"`
-		Twitter   string  `json:"twitter,omitempty"`
-		Instagram string  `json:"instagram,omitempty"`
-		Website   string  `json:"website,omitempty"`
+		Nombre      string `form:"nombre"`
+		Password    string `form:"password,omitempty"`
+		Descripcion string `form:"descripcion"`
+		Direccion   string `form:"direccion"`
+		Telefono    string `form:"telefono"`
+		Correo      string `form:"correo"`
+		// Imagen      string  `form:"imagen"`
+		Latitude  float64 `form:"latitude"`
+		Longitude float64 `form:"longitude"`
+		Facebook  string  `form:"facebook,omitempty"`
+		Twitter   string  `form:"twitter,omitempty"`
+		Instagram string  `form:"instagram,omitempty"`
+		Website   string  `form:"website,omitempty"`
 	}{}
 
-	if err := c.ShouldBindJSON(&negocio); err != nil {
-		errcode := models.Error400(err.Error())
+	if err := c.ShouldBind(&negocio); err != nil {
+		errcode := models.Error400("Error al procesar los datos: " + err.Error())
 		c.JSON(errcode.Code, errcode)
 		return
 	}
 
-	imagen, resE := utils.SubirImagen(c, "imagen")
-	if resE != nil {
-		c.JSON(resE.Code, resE)
-
-		return
+	var imagen *string
+	var resE *models.ErrorStatusCode
+	if _, _, err = c.Request.FormFile("imagen"); err == nil {
+		imagen, resE = utils.UploadToS3(c, "imagen")
+		if resE != nil {
+			c.JSON(resE.Code, resE)
+			return
+		}
 	}
 
-	resE = models.EditarNegocio(idd, negocio.Nombre, negocio.Password, negocio.Direccion, negocio.Direccion, negocio.Telefono, negocio.Correo, *imagen, negocio.Latitude, negocio.Longitude, &negocio.Facebook, &negocio.Twitter, &negocio.Instagram, &negocio.Website)
+	resE = models.EditarNegocio(idd, negocio.Nombre, negocio.Password, negocio.Direccion, negocio.Direccion, negocio.Telefono, negocio.Correo, imagen, negocio.Latitude, negocio.Longitude, &negocio.Facebook, &negocio.Twitter, &negocio.Instagram, &negocio.Website)
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 

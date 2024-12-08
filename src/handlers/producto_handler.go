@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"negosioscol/src/models"
+	"negosioscol/src/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -57,29 +58,26 @@ func CrearProducto(c *gin.Context) {
 		}
 	}()
 
-	var servisio map[string]interface{}
-	if err := c.ShouldBindJSON(&servisio); err != nil {
-		errcode := models.Error500("Ocurrió un problema para procesar la solicitud" + err.Error())
-		c.JSON(errcode.Code, errcode)
+	negocio := struct {
+		Nombre      string `form:"Nombre"`
+		Descripcion string `form:"Descripcion"`
+		Unidad      int64  `form:"Unidad"`
+		Negocio     int64  `form:"Negocio"`
+	}{}
 
+	if err := c.ShouldBind(&negocio); err != nil {
+		errcode := models.Error400("Error al procesar los datos: " + err.Error())
+		c.JSON(errcode.Code, errcode)
 		return
 	}
 
-	// Aquí puedes usar los datos del servisio
-	nombre := servisio["Nombre"].(string)
-	descripcion := servisio["Descripcion"].(string)
-	imagen := servisio["Imagen"].(string)
-	unidad := servisio["Unidad"].(float64)
-	negocio := servisio["Negocio"].(float64)
-
-	if nombre == "" || descripcion == "" || imagen == "" || unidad == 0 || negocio == 0 {
-		errcode := models.Error400("Faltan datos.")
-		c.JSON(errcode.Code, errcode)
-
+	imagen, resE := utils.UploadToS3(c, "Imagen")
+	if resE != nil {
+		c.JSON(resE.Code, resE)
 		return
 	}
 
-	lastID, err := models.CrearProducto(nombre, descripcion, imagen, int64(unidad), int64(negocio))
+	lastID, err := models.CrearProducto(negocio.Nombre, negocio.Descripcion, *imagen, negocio.Unidad, negocio.Negocio)
 	if err != nil {
 		c.JSON(err.Code, err)
 
@@ -113,26 +111,25 @@ func ActualizarProducto(c *gin.Context) {
 		return
 	}
 
-	var servisio map[string]interface{}
-	if err := c.ShouldBindJSON(&servisio); err != nil {
-		c.JSON(500, models.Error500("Ocurrió un problema para procesar la solicitud"+err.Error()))
-		return
-	}
+	negocio := struct {
+		Nombre      string `form:"Nombre"`
+		Descripcion string `form:"Descripcion"`
+		Unidad      int64  `form:"Unidad"`
+	}{}
 
-	// Aquí puedes usar los datos del servisio
-	nombre := servisio["Nombre"].(string)
-	descripcion := servisio["Descripcion"].(string)
-	imagen := servisio["Imagen"].(string)
-	unidad := servisio["Unidad"].(float64)
-
-	if nombre == "" || descripcion == "" || imagen == "" || unidad == 0 {
-		errcode := models.Error400("Faltan datos.")
+	if err := c.ShouldBind(&negocio); err != nil {
+		errcode := models.Error400("Error al procesar los datos: " + err.Error())
 		c.JSON(errcode.Code, errcode)
-
 		return
 	}
 
-	resE := models.EditarProducto(idd, nombre, descripcion, imagen, int64(int64(unidad)))
+	imagen, resE := utils.UploadToS3(c, "Imagen")
+	if resE != nil {
+		c.JSON(resE.Code, resE)
+		return
+	}
+
+	resE = models.EditarProducto(idd, negocio.Nombre, negocio.Descripcion, *imagen, negocio.Unidad)
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 

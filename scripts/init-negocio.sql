@@ -63,23 +63,47 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     UPDATE Negocio
-    SET Nombre = p_Nombre,
+    SET 
+        Nombre = p_Nombre,
         Descripsion = p_Descripsion,
         Password = p_Password,
         Direccion = p_Direccion,
         Telefono = p_Telefono,
         Correo = p_Correo,
-        Imagen = p_Imagen,
         Latitude = p_Latitude,
         Longitude = p_Longitude,
-        Facebook = p_Facebook,
-        Twitter = p_Twitter,
-        Instagram = p_Instagram,
         Website = p_Website,
         Actualizado = NOW()
     WHERE IDNegocio = p_ID;
+
+    -- Actualizar Imagen solo si se proporciona
+    IF p_Imagen IS NOT NULL THEN
+        UPDATE Negocio
+        SET Imagen = p_Imagen
+        WHERE IDNegocio = p_ID;
+    END IF;
+
+    -- Actualizar redes sociales solo si se proporcionan
+    IF p_Facebook IS NOT NULL THEN
+        UPDATE Negocio
+        SET Facebook = p_Facebook
+        WHERE IDNegocio = p_ID;
+    END IF;
+
+    IF p_Twitter IS NOT NULL THEN
+        UPDATE Negocio
+        SET Twitter = p_Twitter
+        WHERE IDNegocio = p_ID;
+    END IF;
+
+    IF p_Instagram IS NOT NULL THEN
+        UPDATE Negocio
+        SET Instagram = p_Instagram
+        WHERE IDNegocio = p_ID;
+    END IF;
 END;
 $$;
+
 
 
 CREATE OR REPLACE FUNCTION EliminarNegocio(
@@ -123,6 +147,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CALL public.registrarnegocio('carpinteria', 'hola_mundo', 'tienda de carpinteria', ':p_direccion', ':p_telefono', ':p_correo', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
-CALL public.registrarnegocio('ferreteria', 'hola_mundo', 'tienda de fereteria', ':p_direccion', ':p_telefono', ':p_correo', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
-CALL public.registrarnegocio('piezeria', 'hola_mundo', 'tienda de pizza', ':p_direccion', ':p_telefono', ':p_correo', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
+CALL public.registrarnegocio('carpinteria', 'hola_mundo', 'tienda de carpinteria', ':p_direccion', ':p_telefono', ':p_correo1', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
+CALL public.registrarnegocio('ferreteria', 'hola_mundo', 'tienda de fereteria', ':p_direccion', ':p_telefono', ':p_correo2', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
+CALL public.registrarnegocio('piezeria', 'hola_mundo', 'tienda de pizza', ':p_direccion', ':p_telefono', ':p_correo3', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYkdI_Bbm2wGjEXStSOCSw0-zPlLVzU4O9W8RGewADkg&s', 2.2, 365.2, ':p_facebook', ':p_twitter', ':p_instagram', ':p_website');
