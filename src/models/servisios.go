@@ -8,13 +8,14 @@ import (
 )
 
 type Servisio struct {
-	IDServicio  int64     `json:"Id_servicio"`
-	Nombre      string    `json:"Nombre"`
-	Descripcion string    `json:"Descripcion"`
-	Imagen      string    `json:"Imagen"`
-	Unidad      int64     `json:"Unidad"`
-	Creado      time.Time `json:"Creado"`
-	Actualizado time.Time `json:"Actualizado"`
+	IDServicio  int64     `json:"id_servicio"`
+	Nombre      string    `json:"nombre"`
+	Descripcion string    `json:"descripcion"`
+	Imagen      string    `json:"imagen"`
+	Unidad      int64     `json:"unidad"`
+	IDNegocio   int64     `json:"id_Negocio"`
+	Creado      time.Time `json:"creado"`
+	Actualizado time.Time `json:"actualizado"`
 }
 
 func CrearServisio(nombre string, descripcion string, imagen string, unidad int64, negocio int64) (*int64, *ErrorStatusCode) {
@@ -123,6 +124,7 @@ func ObtenerServisio(id int64) (*Servisio, *ErrorStatusCode) {
 			&servisio.Descripcion,
 			&servisio.Imagen,
 			&servisio.Unidad,
+			&servisio.IDNegocio,
 			&servisio.Creado,
 			&servisio.Actualizado,
 		)
@@ -131,6 +133,48 @@ func ObtenerServisio(id int64) (*Servisio, *ErrorStatusCode) {
 		}
 	} else {
 		return nil, Error404(fmt.Sprintf("No se encontro el servisio %d", id))
+	}
+
+	return &servisio, nil
+}
+
+func ObtenerUltimosServisio() (*[]Servisio, *ErrorStatusCode) {
+
+	db, err := db.ConnectDB()
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare("SELECT idservicio, nombre, descripcion, unidad, imagen, idnegocio, creado, actualizado FROM Servisio ORDER BY Creado DESC LIMIT 10;")
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
+	defer stmt.Close()
+
+	resul, err := stmt.Query()
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
+
+	var servisio []Servisio
+	for resul.Next() {
+		var buscar Servisio
+		err := resul.Scan(
+			&buscar.IDServicio,
+			&buscar.Nombre,
+			&buscar.Descripcion,
+			&buscar.Unidad,
+			&buscar.Imagen,
+			&buscar.IDNegocio,
+			&buscar.Creado,
+			&buscar.Actualizado,
+		)
+
+		if err != nil {
+			return nil, Error500(err.Error())
+		}
+		servisio = append(servisio, buscar)
 	}
 
 	return &servisio, nil

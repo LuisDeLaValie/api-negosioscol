@@ -5,13 +5,13 @@ import (
 )
 
 type Buscar struct {
-	IDNegosio   int64   `json:"Id_Negocio"`
-	IDProducto  *int64  `json:"Id_Producto,omitempty"`
-	IDServicio  *int64  `json:"Id_servicio,omitempty"`
-	Negocio     string  `json:"Negocio"`
-	Nombre      *string `json:"Nombre,omitempty"`
-	Descripsion string  `json:"Descripsion"`
-	Imagen      string  `json:"Imagen"`
+	IDNegosio   int64   `json:"id_Negocio"`
+	IDProducto  *int64  `json:"id_Producto,omitempty"`
+	IDServicio  *int64  `json:"id_servicio,omitempty"`
+	Negocio     string  `json:"negocio"`
+	Nombre      *string `json:"nombre,omitempty"`
+	Descripsion string  `json:"descripsion"`
+	Imagen      string  `json:"imagen"`
 }
 
 func BuscarServicioProducto(buscar string) (*[]Buscar, *ErrorStatusCode) {

@@ -87,6 +87,8 @@ func main() {
 
 			// Ruta para eliminar un usuario (DELETE)
 			servicios.DELETE("/:id", handlers.EliminarServisio)
+
+			servicios.GET("/lasts", handlers.ObtenerUltimosServisio)
 		}
 
 		negocio := api.Group("/negocios")
@@ -106,9 +108,11 @@ func main() {
 
 			// Ruta para eliminar un usuario (DELETE)
 			negocio.DELETE("/:id", handlers.EliminarNegocio)
+
+			negocio.GET("/lasts", handlers.ObtenerUltimosNegocios)
 		}
 
-		producto := api.Group("/producto")
+		producto := api.Group("/productos")
 		{
 			// Ruta para obtener un usuario por su ID (GET)
 			// producto.GET("/", handlers.Get)
@@ -123,6 +127,8 @@ func main() {
 
 			// Ruta para eliminar un usuario (DELETE)
 			producto.DELETE("/:id", handlers.EliminarProducto)
+
+			producto.GET("/lasts", handlers.ObtenerUltimoProducto)
 		}
 
 	}

@@ -70,12 +70,15 @@ RETURNS TABLE (
     Descripsion TEXT,
     Imagen VARCHAR(255),
     Unidad BIGINT,
+    idnegocio INTEGER,
     Creado TIMESTAMP,
     Actualizado TIMESTAMP
 ) AS $$
 BEGIN
-    RETURN QUERY SELECT Producto.IDProducto, Producto.Nombre, Producto.Descripsion, Producto.Imagen, Producto.Unidad, Producto.Creado, Producto.Actualizado
+    RETURN QUERY SELECT Producto.IDProducto, Producto.Nombre, Producto.Descripsion, Producto.Imagen, Producto.Unidad, Producto.idnegocio, Producto.Creado, Producto.Actualizado
                  FROM Producto
                  WHERE Producto.IDProducto = id_producto;
 END;
 $$ LANGUAGE plpgsql;
+
+

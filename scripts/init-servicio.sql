@@ -72,11 +72,12 @@ RETURNS TABLE (
     Descripcion TEXT,
     Imagen VARCHAR(255),
     Unidad BIGINT,
+    idnegocio INTEGER,
     Creado TIMESTAMP,
     Actualizado TIMESTAMP
 ) AS $$
 BEGIN
-    RETURN QUERY SELECT Servisio.IDServicio, Servisio.Nombre, Servisio.Descripcion, Servisio.Imagen, Servisio.Unidad, Servisio.Creado, Servisio.Actualizado
+    RETURN QUERY SELECT Servisio.IDServicio, Servisio.Nombre, Servisio.Descripcion, Servisio.Imagen, Servisio.Unidad,Servisio.idnegocio, Servisio.Creado, Servisio.Actualizado
                  FROM Servisio
                  WHERE Servisio.IDServicio = id_servisio;
 END;

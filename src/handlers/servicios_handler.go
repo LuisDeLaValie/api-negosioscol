@@ -7,6 +7,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+
+
+// ref: https://swaggo.github.io/swaggo.io/declarative_comments_format/api_operation.html
+// @Summary Show an account
+// @Description get string by ID
+// @Tags accounts
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Account ID"
+// @Success 200 {object} model.Account
+// @Failure 400 {object} model.HTTPError
+// @Router /accounts/{id} [get]
+func ObtenerUltimosServisio(c *gin.Context) {
+	
+
+	servi, resE := models.ObtenerUltimosServisio()
+	if resE != nil {
+		c.JSON(resE.Code, resE)
+		return
+	}
+
+	c.JSON(200, servi)
+}
+
 // Obtener un servisio por su ID
 func GetServisioPorID(c *gin.Context) {
 	id := c.Param("id")

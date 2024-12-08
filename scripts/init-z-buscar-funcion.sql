@@ -1,3 +1,12 @@
+CREATE TABLE Busquedas(
+    fk_users INTEGER NOT NULL,
+    Consulta VARCHAR(100),
+    Resultados TEXT,
+    Creado TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT fk_users FOREIGN KEY (fk_users) REFERENCES Usuario(ID) ON DELETE CASCADE
+
+);
+
 CREATE OR REPLACE FUNCTION BuscarElementos(p_termino VARCHAR)
 RETURNS TABLE (
     IDNegocio INTEGER,

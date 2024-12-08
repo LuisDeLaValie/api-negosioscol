@@ -8,15 +8,15 @@ import (
 )
 
 type Usuario struct {
-	IDUsuario   int64     `json:"Id_Usuario"`
-	Nombre      string    `json:"Nombre"`
-	Apellidos   string    `json:"Apellidos"`
-	Correo      string    `json:"Correo"`
-	Password    string    `json:"Password"`
-	Creado      string    `json:"Creado"`
-	Actualizado time.Time `json:"Actualizado"`
-	Cumpleanos  time.Time `json:"Cumpleanos"`
-	Imagen      string    `json:"Imagen"`
+	IDUsuario   int64     `json:"id_Usuario"`
+	Nombre      string    `json:"nombre"`
+	Apellidos   string    `json:"apellidos"`
+	Correo      string    `json:"correo"`
+	Password    string    `json:"password"`
+	Creado      string    `json:"creado"`
+	Actualizado time.Time `json:"actualizado"`
+	Cumpleanos  time.Time `json:"cumpleanos"`
+	Imagen      string    `json:"imagen"`
 }
 
 func CrearUsuario(nombres string, apellidos string, correo string, password string, cumple string, imagen string) (*int64, *ErrorStatusCode) {

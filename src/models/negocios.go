@@ -233,3 +233,52 @@ func ObtenerProductoNegocio(id int64) (*[]Producto, *ErrorStatusCode) {
 
 	return &resultados, nil
 }
+
+func ObtenerUltimosNegocios() (*[]Negocio, *ErrorStatusCode) {
+
+	db, err := db.ConnectDB()
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare("SELECT * FROM negocio ORDER BY Creado DESC LIMIT 10;")
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
+	defer stmt.Close()
+
+	resul, err := stmt.Query()
+	if err != nil {
+		return nil, Error500(err.Error())
+	}
+
+	var resultados []Negocio
+	for resul.Next() {
+		var buscar Negocio
+		err := resul.Scan(
+			&buscar.IDNegocio,
+			&buscar.Nombre,
+			&buscar.Descripsion,
+			&buscar.Direccion,
+			&buscar.Telefono,
+			&buscar.Correo,
+			&buscar.Imagen,
+			&buscar.Latitude,
+			&buscar.Longitude,
+			&buscar.Facebook,
+			&buscar.Twitter,
+			&buscar.Instagram,
+			&buscar.Website,
+			&buscar.Creado,
+			&buscar.Actualizado,
+		)
+
+		if err != nil {
+			return nil, Error500(err.Error())
+		}
+		resultados = append(resultados, buscar)
+	}
+
+	return &resultados, nil
+}
