@@ -6,6 +6,7 @@ CREATE TABLE Servisio (
     Imagen VARCHAR(255),
     Unidad BIGINT,
     IDNegocio INTEGER NOT NULL,
+    Precio INTEGER NOT NULL,
     Creado TIMESTAMP DEFAULT NOW(),
     Actualizado TIMESTAMP DEFAULT NOW(),
     CONSTRAINT fk_negocio FOREIGN KEY (IDNegocio) REFERENCES Negocio(IDNegocio) ON DELETE CASCADE
@@ -18,13 +19,14 @@ CREATE OR REPLACE PROCEDURE RegistrarServisio(
     p_Descripcion TEXT,
     p_Imagen VARCHAR(255),
     p_Unidad BIGINT,
-    p_IDNegocio INT
+    p_IDNegocio INT,
+    p_Precio INTEGER
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    INSERT INTO Servisio (Nombre, Descripcion, Imagen, Unidad, IDNegocio, Creado, Actualizado)
-    VALUES (p_Nombre, p_Descripcion, p_Imagen, p_Unidad, p_IDNegocio, NOW(), NOW());
+    INSERT INTO Servisio (Nombre, Descripcion, Imagen, Unidad, IDNegocio, Precio, Creado, Actualizado)
+    VALUES (p_Nombre, p_Descripcion, p_Imagen, p_Unidad, p_IDNegocio, p_Precio, NOW(), NOW());
 END;
 $$;
 
@@ -34,7 +36,8 @@ CREATE OR REPLACE PROCEDURE ActualizarServisio(
     p_Nombre VARCHAR(255),
     p_Descripcion TEXT,
     p_Imagen VARCHAR(255),
-    p_Unidad BIGINT
+    p_Unidad BIGINT,
+    p_Precio INTEGER
 )
 LANGUAGE plpgsql
 AS $$
@@ -43,6 +46,7 @@ BEGIN
     SET Nombre = p_Nombre,
         Descripcion = p_Descripcion,
         Unidad = p_Unidad,
+        Precio= p_Precio,
         Actualizado = NOW()
     WHERE IDServicio = p_ID;
 
@@ -81,11 +85,12 @@ RETURNS TABLE (
     Imagen VARCHAR(255),
     Unidad BIGINT,
     idnegocio INTEGER,
+    Precio INTEGER,
     Creado TIMESTAMP,
     Actualizado TIMESTAMP
 ) AS $$
 BEGIN
-    RETURN QUERY SELECT Servisio.IDServicio, Servisio.Nombre, Servisio.Descripcion, Servisio.Imagen, Servisio.Unidad,Servisio.idnegocio, Servisio.Creado, Servisio.Actualizado
+    RETURN QUERY SELECT Servisio.IDServicio, Servisio.Nombre, Servisio.Descripcion, Servisio.Imagen, Servisio.Unidad,Servisio.idnegocio, Servisio.Precio, Servisio.Creado, Servisio.Actualizado
                  FROM Servisio
                  WHERE Servisio.IDServicio = id_servisio;
 END;

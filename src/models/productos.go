@@ -8,17 +8,19 @@ import (
 )
 
 type Producto struct {
-	IDProducto  int64     `json:"id_Producto"`
-	IDNegocio   int64     `json:"id_Negocio"`
-	Nombre      string    `json:"nombre"`
-	Descripsion string    `json:"descripsion"`
-	Imagen      string    `json:"imagen"`
-	Unidad      int64     `json:"unidad"`
+	IDProducto  int64  `json:"id_Producto"`
+	IDNegocio   int64  `json:"id_Negocio"`
+	Nombre      string `json:"nombre"`
+	Descripsion string `json:"descripsion"`
+	Imagen      string `json:"imagen"`
+	Unidad      int64  `json:"unidad"`
+	Precio      int64  `json:"precio"`
+	// precio      int64     `json:"precio"`
 	Creado      time.Time `json:"creado"`
 	Actualizado time.Time `json:"actualizado"`
 }
 
-func CrearProducto(nombre string, descripcion string, imagen string, unidad int64, negocio int64) (*int64, *ErrorStatusCode) {
+func CrearProducto(nombre string, descripcion string, imagen string, unidad int64, negocio int64, precio int64) (*int64, *ErrorStatusCode) {
 
 	db, err := db.ConnectDB()
 	if err != nil {
@@ -26,13 +28,13 @@ func CrearProducto(nombre string, descripcion string, imagen string, unidad int6
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("CALL registrarproducto($1, $2, $3, $4, $5);")
+	stmt, err := db.Prepare("CALL registrarproducto($1, $2, $3, $4, $5, $6);")
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(nombre, descripcion, imagen, unidad, negocio)
+	_, err = stmt.Exec(nombre, descripcion, imagen, unidad, negocio, precio)
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
@@ -47,7 +49,7 @@ func CrearProducto(nombre string, descripcion string, imagen string, unidad int6
 	return &lastID, nil
 
 }
-func EditarProducto(id int, nombre string, descripcion string, imagen string, unidad int64) *ErrorStatusCode {
+func EditarProducto(id int, nombre string, descripcion string, imagen *string, unidad int64, precio int64) *ErrorStatusCode {
 
 	db, err := db.ConnectDB()
 	if err != nil {
@@ -55,15 +57,15 @@ func EditarProducto(id int, nombre string, descripcion string, imagen string, un
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("CALL actualizarproducto($1, $2, $3, $4, $5);")
+	stmt, err := db.Prepare("CALL actualizarproducto($1, $2, $3, $4, $5, $6);")
 	if err != nil {
-		return Error500(err.Error())
+		return Error500("Error parse SQL: " + err.Error())
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(id, nombre, descripcion, imagen, unidad)
+	_, err = stmt.Exec(id, nombre, descripcion, imagen, unidad, precio)
 	if err != nil {
-		return Error500(err.Error())
+		return Error500("Error exejutar SQL: " + err.Error())
 	}
 
 	return nil
@@ -125,6 +127,7 @@ func ObtenerProducto(id int64) (*Producto, *ErrorStatusCode) {
 			&producto.Imagen,
 			&producto.Unidad,
 			&producto.IDNegocio,
+			&producto.Precio,
 			&producto.Creado,
 			&producto.Actualizado,
 		)
@@ -145,7 +148,7 @@ func ObtenerUltimoProducto() (*[]Producto, *ErrorStatusCode) {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("SELECT idproducto, nombre, descripsion, imagen, unidad, idnegocio, creado, actualizado FROM Producto ORDER BY Creado DESC LIMIT 10;")
+	stmt, err := db.Prepare("SELECT idproducto, nombre, descripsion, imagen, unidad, idnegocio, precio, creado, actualizado FROM Producto ORDER BY Creado DESC LIMIT 10;")
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
@@ -166,6 +169,7 @@ func ObtenerUltimoProducto() (*[]Producto, *ErrorStatusCode) {
 			&buscar.Imagen,
 			&buscar.Unidad,
 			&buscar.IDNegocio,
+			&buscar.Precio,
 			&buscar.Creado,
 			&buscar.Actualizado,
 		)

@@ -14,11 +14,12 @@ type Servisio struct {
 	Imagen      string    `json:"imagen"`
 	Unidad      int64     `json:"unidad"`
 	IDNegocio   int64     `json:"id_Negocio"`
+	Precio      int64     `json:"precio"`
 	Creado      time.Time `json:"creado"`
 	Actualizado time.Time `json:"actualizado"`
 }
 
-func CrearServisio(nombre string, descripcion string, imagen string, unidad int64, negocio int64) (*int64, *ErrorStatusCode) {
+func CrearServisio(nombre string, descripcion string, imagen *string, unidad int64, negocio int64, precio int64) (*int64, *ErrorStatusCode) {
 
 	db, err := db.ConnectDB()
 	if err != nil {
@@ -26,13 +27,13 @@ func CrearServisio(nombre string, descripcion string, imagen string, unidad int6
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("CALL registrarservisio($1, $2, $3, $4,$5);")
+	stmt, err := db.Prepare("CALL registrarservisio($1, $2, $3, $4,$5, $6);")
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(nombre, descripcion, imagen, unidad, negocio)
+	_, err = stmt.Exec(nombre, descripcion, imagen, unidad, negocio, precio)
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
@@ -47,7 +48,7 @@ func CrearServisio(nombre string, descripcion string, imagen string, unidad int6
 	return &lastID, nil
 
 }
-func EditarServisio(id int, nombre string, descripcion string, imagen string, unidad int64) *ErrorStatusCode {
+func EditarServisio(id int, nombre string, descripcion string, imagen *string, unidad int64, precio int64) *ErrorStatusCode {
 
 	db, err := db.ConnectDB()
 	if err != nil {
@@ -55,13 +56,13 @@ func EditarServisio(id int, nombre string, descripcion string, imagen string, un
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("CALL actualizarservisio($1, $2, $3, $4, $5);")
+	stmt, err := db.Prepare("CALL actualizarservisio($1, $2, $3, $4, $5, $6);")
 	if err != nil {
 		return Error500(err.Error())
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(id, nombre, descripcion, imagen, unidad)
+	_, err = stmt.Exec(id, nombre, descripcion, imagen, unidad, precio)
 	if err != nil {
 		return Error500(err.Error())
 	}
@@ -125,6 +126,7 @@ func ObtenerServisio(id int64) (*Servisio, *ErrorStatusCode) {
 			&servisio.Imagen,
 			&servisio.Unidad,
 			&servisio.IDNegocio,
+			&servisio.Precio,
 			&servisio.Creado,
 			&servisio.Actualizado,
 		)
@@ -146,7 +148,7 @@ func ObtenerUltimosServisio() (*[]Servisio, *ErrorStatusCode) {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("SELECT idservicio, nombre, descripcion, unidad, imagen, idnegocio, creado, actualizado FROM Servisio ORDER BY Creado DESC LIMIT 10;")
+	stmt, err := db.Prepare("SELECT idservicio, nombre, descripcion, unidad, imagen, idnegocio, precio, creado, actualizado FROM Servisio ORDER BY Creado DESC LIMIT 10;")
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
@@ -167,6 +169,7 @@ func ObtenerUltimosServisio() (*[]Servisio, *ErrorStatusCode) {
 			&buscar.Unidad,
 			&buscar.Imagen,
 			&buscar.IDNegocio,
+			&buscar.Precio,
 			&buscar.Creado,
 			&buscar.Actualizado,
 		)

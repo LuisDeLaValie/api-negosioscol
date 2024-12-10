@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"negosioscol/src/models"
 	"negosioscol/src/utils"
 	"strconv"
@@ -63,6 +64,7 @@ func CrearProducto(c *gin.Context) {
 		Descripcion string `form:"Descripcion"`
 		Unidad      int64  `form:"Unidad"`
 		Negocio     int64  `form:"Negocio"`
+		Precio      int64  `form:"Precio"`
 	}{}
 
 	if err := c.ShouldBind(&negocio); err != nil {
@@ -77,7 +79,8 @@ func CrearProducto(c *gin.Context) {
 		return
 	}
 
-	lastID, err := models.CrearProducto(negocio.Nombre, negocio.Descripcion, *imagen, negocio.Unidad, negocio.Negocio)
+	fmt.Println(negocio)
+	lastID, err := models.CrearProducto(negocio.Nombre, negocio.Descripcion, *imagen, negocio.Unidad, negocio.Negocio, negocio.Precio)
 	if err != nil {
 		c.JSON(err.Code, err)
 
@@ -115,6 +118,7 @@ func ActualizarProducto(c *gin.Context) {
 		Nombre      string `form:"Nombre"`
 		Descripcion string `form:"Descripcion"`
 		Unidad      int64  `form:"Unidad"`
+		Precio      int64  `form:"Precio"`
 	}{}
 
 	if err := c.ShouldBind(&negocio); err != nil {
@@ -123,13 +127,19 @@ func ActualizarProducto(c *gin.Context) {
 		return
 	}
 
-	imagen, resE := utils.UploadToS3(c, "Imagen")
-	if resE != nil {
-		c.JSON(resE.Code, resE)
-		return
+	fmt.Print(negocio)
+	var imagen *string
+	var resE *models.ErrorStatusCode
+	if _, _, err = c.Request.FormFile("Imagen"); err == nil {
+		imagen, resE = utils.UploadToS3(c, "Imagen")
+		if resE != nil {
+			c.JSON(resE.Code, resE)
+			return
+		}
 	}
+	fmt.Println(imagen)
 
-	resE = models.EditarProducto(idd, negocio.Nombre, negocio.Descripcion, *imagen, negocio.Unidad)
+	resE = models.EditarProducto(idd, negocio.Nombre, negocio.Descripcion, imagen, negocio.Unidad, negocio.Precio)
 	if resE != nil {
 		c.JSON(resE.Code, resE)
 

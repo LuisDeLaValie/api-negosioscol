@@ -5,6 +5,7 @@ CREATE TABLE Producto (
     Imagen VARCHAR(255),
     Unidad BIGINT,
     IDNegocio INTEGER NOT NULL,
+    Precio INTEGER NOT NULL,
     Creado TIMESTAMP DEFAULT NOW(),
     Actualizado TIMESTAMP DEFAULT NOW(),
     CONSTRAINT fk_negocio FOREIGN KEY (IDNegocio) REFERENCES Negocio(IDNegocio) ON DELETE CASCADE
@@ -16,13 +17,14 @@ CREATE OR REPLACE PROCEDURE RegistrarProducto(
     p_Descripsion TEXT,
     p_Imagen VARCHAR(255),
     p_Unidad BIGINT,
-    p_IDNegocio INT
+    p_IDNegocio INT,
+    p_Precio INTEGER
 )
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    INSERT INTO Producto (Nombre, Descripsion, Imagen, Unidad, IDNegocio, Creado, Actualizado)
-    VALUES (p_Nombre, p_Descripsion, p_Imagen, p_Unidad, p_IDNegocio, NOW(), NOW());
+    INSERT INTO Producto (Nombre, Descripsion, Imagen, Unidad, IDNegocio,Precio , Creado, Actualizado)
+    VALUES (p_Nombre, p_Descripsion, p_Imagen, p_Unidad, p_IDNegocio,p_Precio, NOW(), NOW());
 END;
 $$;
 
@@ -31,7 +33,9 @@ CREATE OR REPLACE PROCEDURE ActualizarProducto(
     p_Nombre VARCHAR(255),
     p_Descripsion TEXT,
     p_Imagen VARCHAR(255),
-    p_Unidad BIGINT
+    p_Unidad BIGINT,
+    p_Precio INTEGER
+
 )
 LANGUAGE plpgsql
 AS $$
@@ -40,6 +44,7 @@ BEGIN
     SET Nombre = p_Nombre,
         Descripsion = p_Descripsion,
         Unidad = p_Unidad,
+        Precio= p_Precio,
         Actualizado = NOW()
     WHERE IDProducto = p_ID;
 
@@ -77,11 +82,12 @@ RETURNS TABLE (
     Imagen VARCHAR(255),
     Unidad BIGINT,
     idnegocio INTEGER,
+    Precio INTEGER,
     Creado TIMESTAMP,
     Actualizado TIMESTAMP
 ) AS $$
 BEGIN
-    RETURN QUERY SELECT Producto.IDProducto, Producto.Nombre, Producto.Descripsion, Producto.Imagen, Producto.Unidad, Producto.idnegocio, Producto.Creado, Producto.Actualizado
+    RETURN QUERY SELECT Producto.IDProducto, Producto.Nombre, Producto.Descripsion, Producto.Imagen, Producto.Unidad, Producto.idnegocio, Producto.Precio, Producto.Creado, Producto.Actualizado
                  FROM Producto
                  WHERE Producto.IDProducto = id_producto;
 END;

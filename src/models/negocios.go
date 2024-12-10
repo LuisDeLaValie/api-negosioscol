@@ -161,7 +161,7 @@ func ObtenerServicioNegocio(id int64) (*[]Servisio, *ErrorStatusCode) {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("select s.idservicio ,s.nombre ,s.descripcion ,s.imagen ,s.unidad ,s.creado ,s.actualizado from servisio s where s.idnegocio =$1;")
+	stmt, err := db.Prepare("select s.IDServicio, s.idservicio ,s.nombre ,s.descripcion ,s.imagen ,s.unidad, s.Precio, s.creado ,s.actualizado from servisio s where s.idnegocio =$1;")
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
@@ -176,11 +176,13 @@ func ObtenerServicioNegocio(id int64) (*[]Servisio, *ErrorStatusCode) {
 	for resul.Next() {
 		var buscar Servisio
 		err := resul.Scan(
+			&buscar.IDNegocio,
 			&buscar.IDServicio,
 			&buscar.Nombre,
 			&buscar.Descripcion,
 			&buscar.Imagen,
 			&buscar.Unidad,
+			&buscar.Precio,
 			&buscar.Creado,
 			&buscar.Actualizado,
 		)
@@ -202,7 +204,7 @@ func ObtenerProductoNegocio(id int64) (*[]Producto, *ErrorStatusCode) {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("select p.idproducto ,p.nombre ,p.descripsion ,p.imagen ,p.unidad ,p.creado ,p.actualizado  from producto p  where p.idnegocio =$1;")
+	stmt, err := db.Prepare("select p.IDProducto, p.idproducto ,p.nombre ,p.descripsion ,p.imagen ,p.unidad, p.Precio, p.creado ,p.actualizado  from producto p  where p.idnegocio =$1;")
 	if err != nil {
 		return nil, Error500(err.Error())
 	}
@@ -217,11 +219,13 @@ func ObtenerProductoNegocio(id int64) (*[]Producto, *ErrorStatusCode) {
 	for resul.Next() {
 		var buscar Producto
 		err := resul.Scan(
+			&buscar.IDNegocio,
 			&buscar.IDProducto,
 			&buscar.Nombre,
 			&buscar.Descripsion,
 			&buscar.Imagen,
 			&buscar.Unidad,
+			&buscar.Precio,
 			&buscar.Creado,
 			&buscar.Actualizado,
 		)
