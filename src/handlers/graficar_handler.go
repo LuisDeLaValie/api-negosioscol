@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"negosioscol/src/db"
 	"negosioscol/src/models"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,11 +23,10 @@ type Totales struct {
 	NegociosConProductosOServicios int64 `json:"negociosPS"`
 }
 type TotalesDias struct {
-	Fecha          time.Time `json:"fecha"`
-	TotalNegocios  int64     `json:"negocios"`
-	TotalServicios int64     `json:"servicios"`
-	TotalProductos int64     `json:"productos"`
-	TotalBusquedas int64     `json:"busquedas"`
+	TotalNegocios  int64 `json:"negocios"`
+	TotalServicios int64 `json:"servicios"`
+	TotalProductos int64 `json:"productos"`
+	TotalBusquedas int64 `json:"busquedas"`
 }
 
 type Estadisticas struct {
@@ -240,7 +238,6 @@ func obtenerTotalesPorDia() (*[]TotalesDias, *models.ErrorStatusCode) {
 	for rows.Next() {
 		var totaleDia TotalesDias
 		err := rows.Scan(
-			&totaleDia.Fecha,
 			&totaleDia.TotalNegocios,
 			&totaleDia.TotalServicios,
 			&totaleDia.TotalProductos,
